@@ -7,6 +7,53 @@ from PySide6.QtCore import Qt, QSize, QRect, QRectF
 
 from database_connect_dialog import DatabaseConnectDialog  # Assuming this is the auto-generated class from your .ui file
 
+from PySide6.QtGui import QWheelEvent, QMouseEvent
+
+class ZoomPanGraphicsView(QGraphicsView):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._zoom = 1.0
+        self._dragging = False
+        self._last_pos = None
+
+        self.setRenderHints(self.renderHints() | QPainter.Antialiasing)
+        self.setDragMode(QGraphicsView.NoDrag)  # We'll handle drag ourselves
+        self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
+        self.setResizeAnchor(QGraphicsView.AnchorUnderMouse)
+
+    def wheelEvent(self, event: QWheelEvent):
+        zoom_factor = 1.15
+        if event.angleDelta().y() > 0:
+            zoom = zoom_factor
+        else:
+            zoom = 1 / zoom_factor
+        self._zoom *= zoom
+        self.scale(zoom, zoom)
+
+    def mousePressEvent(self, event: QMouseEvent):
+        if event.button() == Qt.LeftButton:
+            self._dragging = True
+            self._last_pos = event.pos()
+            self.setCursor(Qt.ClosedHandCursor)
+        else:
+            super().mousePressEvent(event)
+
+    def mouseMoveEvent(self, event: QMouseEvent):
+        if self._dragging:
+            delta = self._last_pos - event.pos()
+            self._last_pos = event.pos()
+            self.horizontalScrollBar().setValue(self.horizontalScrollBar().value() + delta.x())
+            self.verticalScrollBar().setValue(self.verticalScrollBar().value() + delta.y())
+        else:
+            super().mouseMoveEvent(event)
+
+    def mouseReleaseEvent(self, event: QMouseEvent):
+        if event.button() == Qt.LeftButton:
+            self._dragging = False
+            self.setCursor(Qt.ArrowCursor)
+        else:
+            super().mouseReleaseEvent(event)
+
 class SLDCanvas(QGraphicsView):
     def __init__(self):
         super().__init__()
@@ -59,9 +106,20 @@ class MyApp(QMainWindow):
 
         # Central widget
         self.canvas = SLDCanvas()
-        self.setCentralWidget(self.canvas)
+        # self.setCentralWidget(self.canvas)
 
-        
+        self.setGeometry(100, 100, 800, 600)
+
+        self.scene = QGraphicsScene()
+        self.scene.setSceneRect(0, 0, 2000, 1000)
+
+        self.view = ZoomPanGraphicsView(self.scene)
+        self.setCentralWidget(self.view)
+
+        # Example item
+        line = QGraphicsLineItem(100, 100, 400, 100)
+        line.setPen(QPen(QColor("blue"), 5))
+        self.scene.addItem(line)
 
         # Menu bar
         self.create_menu_bar()
