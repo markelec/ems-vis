@@ -1,0 +1,106 @@
+import sys
+from PySide6.QtWidgets import (
+    QApplication, QMainWindow, QTextEdit, QToolBar, QMenu, QMenuBar
+)
+from PySide6.QtGui import QIcon, QAction, QFont
+from PySide6.QtCore import Qt, QSize, QRect
+
+from database_connect_dialog import DatabaseConnectDialog  # Assuming this is the auto-generated class from your .ui file
+
+class MyApp(QMainWindow):
+    def __init__(self):
+        super().__init__()
+
+        # Window settings
+        self.setWindowTitle("Microgrid Energy Management System")
+        
+        # mfont = QFont("Arial", 8)
+        # self.setFont(mfont)
+
+        # Central widget
+        self.editor = QTextEdit()
+        self.setCentralWidget(self.editor)
+
+        # Menu bar
+        self.create_menu_bar()
+
+        # Toolbar
+        self.create_toolbar()
+
+    def create_menu_bar(self):
+        menu_bar = self.menuBar()
+        menu_bar.setGeometry(QRect(0, 0, 800, 35))  # Set height to 30px
+        
+        
+        # Minimal style sheet to reduce height without ruining native appearance
+        # menu_bar.setStyleSheet("""
+        #     QMenuBar {
+        #         font-size: 8pt; * Reduced font size */
+        #         spacing: 0px;
+        #         padding: 2px 0px; 
+        #         margin-right: 0px;
+        #     }
+        #     QMenuBar::item {
+        #         padding: 2px 0px;  /* top/bottom padding reduced */
+        #         margin-right: 0px;
+        #     }
+        # """)
+
+        db_menu = menu_bar.addMenu("Database")
+        conn_action = QAction("Connection", self)
+        conn_action.triggered.connect(lambda: DatabaseConnectDialog(self).exec())
+        modbus_action = QAction("Modbus", self)
+        exit_action = QAction("Exit", self)
+        db_menu.addAction(conn_action)
+        db_menu.addAction(modbus_action)
+        db_menu.addAction(exit_action)
+        
+        sys_menu = menu_bar.addMenu("System")
+        elm_action = QAction("Elements Mapping", self)
+        layer_action = QAction("Layer", self)
+        sys_menu.addAction(elm_action)
+        sys_menu.addAction(layer_action)
+        
+        op_menu = menu_bar.addMenu("Operation")
+        seq_action = QAction("Sequence", self)
+        load_action = QAction("Load Forecast", self)
+        op_menu.addAction(seq_action)
+        op_menu.addAction(load_action)
+        
+        set_menu = menu_bar.addMenu("Setting")
+        col_action = QAction("Color", self)
+        font_action = QAction("Font", self)
+        set_menu.addAction(col_action)
+        set_menu.addAction(font_action)
+       
+
+        help_menu = menu_bar.addMenu("Help")
+        doc_action = QAction("Document", self)
+        about_action = QAction("About", self)
+        help_menu.addAction(doc_action)
+        help_menu.addAction(about_action)
+
+
+    def create_toolbar(self):
+        toolbar = QToolBar("Main Toolbar")
+        toolbar.setIconSize(QSize(16, 16))
+        self.addToolBar(Qt.TopToolBarArea, toolbar)
+
+        new_icon = QAction(QIcon(), "New", self)
+        new_icon.triggered.connect(lambda: self.editor.setText(""))
+        toolbar.addAction(new_icon)
+
+        exit_icon = QAction(QIcon(), "Exit", self)
+        exit_icon.triggered.connect(self.close)
+        toolbar.addAction(exit_icon)
+
+    def show_about(self):
+        self.editor.setText("This is a sample PySide6 app with menu and toolbar.")
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    app.setStyle("Windows")  # Optional: Set a style for the app
+    app.setApplicationName("Microgrid Energy Management System")
+    window = MyApp()
+    window.show()
+    sys.exit(app.exec())
