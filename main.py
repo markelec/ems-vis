@@ -1,11 +1,51 @@
 import sys
 from PySide6.QtWidgets import (
-    QApplication, QMainWindow, QTextEdit, QToolBar, QMenu, QMenuBar
+    QApplication, QMainWindow, QTextEdit, QToolBar, QMenu, QMenuBar, QGraphicsView, QGraphicsScene, QGraphicsLineItem, QGraphicsRectItem
 )
-from PySide6.QtGui import QIcon, QAction, QFont
-from PySide6.QtCore import Qt, QSize, QRect
+from PySide6.QtGui import QIcon, QAction, QFont, QColor, QPen, QBrush, QPainter
+from PySide6.QtCore import Qt, QSize, QRect, QRectF
 
 from database_connect_dialog import DatabaseConnectDialog  # Assuming this is the auto-generated class from your .ui file
+
+class SLDCanvas(QGraphicsView):
+    def __init__(self):
+        super().__init__()
+
+        self.scene = QGraphicsScene()
+        self.setScene(self.scene)
+        self.setRenderHint(QPainter.Antialiasing)
+
+        # Set dark background
+        self.setBackgroundBrush(QColor("#1e1e1e"))
+
+        self.draw_sld()
+
+    def draw_sld(self):
+        bus_pen = QPen(QColor("red"), 8)  # DeepSkyBlue
+        line_pen = QPen(QColor("#CCCCCC"), 3)  # Light gray
+
+        # Draw busbar (a thick horizontal line)
+        busbar_y = 100
+        busbar = QGraphicsLineItem(100, busbar_y, 600, busbar_y)
+        busbar.setPen(bus_pen)
+        busbar.setZValue(1)
+        self.scene.addItem(busbar)
+        
+
+        # Draw 3 feeder lines connected to the busbar
+        for i in range(3):
+            x = 150 + i * 150
+            feeder = QGraphicsLineItem(x, busbar_y, x, busbar_y + 100)
+            feeder.setPen(line_pen)
+            feeder.setZValue(0)
+            self.scene.addItem(feeder)
+
+            # Draw load (gray box)
+            load = QGraphicsRectItem(QRectF(x - 10, busbar_y + 100, 20, 20))
+            load.setBrush(QBrush(QColor("#888888")))
+            load.setPen(QPen(Qt.NoPen))
+            load.setZValue(0)
+            self.scene.addItem(load)
 
 class MyApp(QMainWindow):
     def __init__(self):
@@ -18,8 +58,10 @@ class MyApp(QMainWindow):
         # self.setFont(mfont)
 
         # Central widget
-        self.editor = QTextEdit()
-        self.setCentralWidget(self.editor)
+        self.canvas = SLDCanvas()
+        self.setCentralWidget(self.canvas)
+
+        
 
         # Menu bar
         self.create_menu_bar()
@@ -99,7 +141,7 @@ class MyApp(QMainWindow):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    app.setStyle("Windows")  # Optional: Set a style for the app
+    app.setStyle("WindowsVista")  # Optional: Set a style for the app
     app.setApplicationName("Microgrid Energy Management System")
     window = MyApp()
     window.show()
