@@ -1,0 +1,172 @@
+
+[
+    {
+    "type": "bus",
+    "id": "1",
+    "data":{
+        "name": "Bus 1",
+        "direction": "horizontal",
+        "position": [ 1.0, 1.0],
+        "length": 2.0,
+        "widthscale": 1.0,
+        "color": "red",
+        "upport": {
+            "size": 0.8,
+            "number": 2
+        },
+        "downport": {
+            "size": 0.8,
+            "number": 2
+        }
+    }
+    },
+    {
+    "type": "line",
+    "id": "2",
+    "data": {
+        "name": "Line 1",
+        "from": "1:d1",
+        "to": "2:u1",
+        "points": [ [1.0, 1.0], [2.0, 1.0] ],
+        "color": "blue",
+        "linescale": 0.8,
+        "cubicle1": [
+                {
+                    "type": "breaker",
+                    "id": "3",
+                    "data": {
+                        "name": "Breaker 1",
+                        "offset": 0,
+                        "color": "green",
+                        "scale": 1.0
+                    }
+                },
+                {
+                    "type": "switch",
+                    "id": "4",
+                    "data": {
+                        "name": "Switch 1",
+                        "offset": 0,
+                        "color": "green",
+                        "scale": 1.0
+                    }
+                }
+        ],
+        "cubicle2": [
+                {
+                    "type": "breaker",
+                    "id": "5",
+                    "data": {
+                        "name": "Breaker 2",
+                        "offset": 0,
+                        "color": "green",
+                        "scale": 1.0
+                    }
+                },
+                {
+                    "type": "switch",
+                    "id": "6",
+                    "data": {
+                        "name": "Switch 2",
+                        "offset": 0,
+                        "color": "green",
+                        "scale": 1.0
+                    }
+                }
+        ]
+        }
+    },
+    {
+        "type": "load",
+        "id": "l1",
+        "data":{
+            "name": "Load 1",
+            "from": "1:d2",
+            "points": [],
+            "length": 1.0,
+            "color": "red",
+            "linescale": 1.0,
+            "symbolscale": 1.0,
+            "cubicle": [
+                {
+                    "type": "breaker",
+                    "id": "3",
+                    "data": {
+                        "name": "Breaker 2",
+                        "offset": 0,
+                        "color": "green",
+                        "scale": 1.0
+                    }
+                }
+                
+        ]
+        }
+    },
+    {
+        "type": "gen",
+        "subtype": "sym",
+        "id": "g1",
+        "data":{
+            "name": "Gen 1",
+            "from": "1:d3",
+            "points": [],
+            "length": 1.0,
+            "color": "red",
+            "linescale": 1.0,
+            "symbolscale": 1.0,
+            "cubicle": [
+                {
+                    "type": "breaker",
+                    "id": "3",
+                    "data": {
+                        "name": "Breaker 2",
+                        "offset": 0,
+                        "color": "green",
+                        "scale": 1.0
+                    }
+                }
+                
+        ]
+        }
+    },
+    {
+        "type": "text",
+        "subtype": "label",
+        "id": "lb1",
+        "data": {
+            "name": "Label 1",
+            "width": 2.0,
+            "height": 1.0,
+            "position": [2.0, 2.0],
+            "position2": "1:s",
+            "offset": [0, 0],
+            "anchor": 5,
+            "rotation": 0,
+            "halign": "center",
+            "valign": "middle",
+            "font": "Arial",
+            "text": "This is a label",
+            "color": "black",
+            "fontsize": 12,
+            "fontweight": "normal"
+        }
+    },
+    {
+        "type": "rectangle",
+        "id": "rect1",
+        "data": {
+            "name": "Rectangle 1",
+            "width": 2.0,
+            "height": 1.0,
+            "position": [3.0, 3.0],
+            "position2": "1:s",
+            "offset": [0, 0],
+            "anchor": 5,
+            "rotation": 0,
+            "color": "lightblue",
+            "bordercolor": "black",
+            "borderwidth": 1
+        }
+    }
+    
+]

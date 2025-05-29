@@ -8,6 +8,7 @@ from PySide6.QtCore import Qt, QSize, QRect, QRectF
 from database_connect_dialog import DatabaseConnectDialog  # Assuming this is the auto-generated class from your .ui file
 
 from PySide6.QtGui import QWheelEvent, QMouseEvent
+from drawutils import draw_object_from_json  # Assuming this is your custom drawing utility
 
 class ZoomPanGraphicsView(QGraphicsView):
     def __init__(self, *args, **kwargs):
@@ -20,6 +21,7 @@ class ZoomPanGraphicsView(QGraphicsView):
         self.setDragMode(QGraphicsView.NoDrag)  # We'll handle drag ourselves
         self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
         self.setResizeAnchor(QGraphicsView.AnchorUnderMouse)
+        self.setBackgroundBrush(QColor("#1e1e1e"))
 
     def wheelEvent(self, event: QWheelEvent):
         zoom_factor = 1.15
@@ -53,6 +55,38 @@ class ZoomPanGraphicsView(QGraphicsView):
             self.setCursor(Qt.ArrowCursor)
         else:
             super().mouseReleaseEvent(event)
+            
+    def draw_sld(self):
+        bus_pen = QPen(QColor("red"), 8)  # DeepSkyBlue
+        line_pen = QPen(QColor("red"), 3)  # Light gray
+
+        # Draw busbar (a thick horizontal line)
+        busbar_y = 100
+        busbar = QGraphicsLineItem(100, busbar_y, 600, busbar_y)
+        busbar.setPen(bus_pen)
+        busbar.setZValue(1)
+        self.scene().addItem(busbar)
+        
+
+        # Draw 3 feeder lines connected to the busbar
+        for i in range(3):
+            x = 150 + i * 150
+            feeder = QGraphicsLineItem(x, busbar_y, x, busbar_y + 100)
+            feeder.setPen(line_pen)
+            feeder.setZValue(0)
+            self.scene().addItem(feeder)
+
+            # Draw load (gray box)
+            load = QGraphicsRectItem(QRectF(x - 10, busbar_y + 100, 20, 20))
+            load.setBrush(QBrush(QColor("red")))
+            load.setPen(QPen(Qt.NoPen))
+            load.setZValue(0)
+            self.scene().addItem(load)
+            
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        print("Updated viewport size:", self.viewport().size())
+        window.view.fitInView(window.scene.sceneRect(), Qt.KeepAspectRatio)
 
 class SLDCanvas(QGraphicsView):
     def __init__(self):
@@ -105,21 +139,44 @@ class MyApp(QMainWindow):
         # self.setFont(mfont)
 
         # Central widget
-        self.canvas = SLDCanvas()
+        # self.view = SLDCanvas()
         # self.setCentralWidget(self.canvas)
 
-        self.setGeometry(100, 100, 800, 600)
+        # self.setGeometry(100, 100, 800, 600)
 
         self.scene = QGraphicsScene()
         self.scene.setSceneRect(0, 0, 2000, 1000)
 
         self.view = ZoomPanGraphicsView(self.scene)
         self.setCentralWidget(self.view)
+        # self.view.draw_sld()
+        bus_json = {
+        "type": "bus",
+        "id": "bus1",
+        "data": {
+            "name": "Bus 1",
+            "direction": "point",  # horizontal, vertical, point
+            "position": [800, 200],
+            "length": 400,
+            "widthscale": 1.5,
+            "color": "red",
+            "upport": {
+                "size": 0.2,
+                "number": 3
+            },
+            "downport": {
+                "size": 0.2,
+                "number": 2
+            }
+            }
+        }
+
+        draw_object_from_json(self.view.scene(), bus_json)
 
         # Example item
-        line = QGraphicsLineItem(100, 100, 400, 100)
-        line.setPen(QPen(QColor("blue"), 5))
-        self.scene.addItem(line)
+        # line = QGraphicsLineItem(100, 100, 400, 100)
+        # line.setPen(QPen(QColor("blue"), 5))
+        # self.scene.addItem(line)
 
         # Menu bar
         self.create_menu_bar()
@@ -202,5 +259,8 @@ if __name__ == "__main__":
     app.setStyle("WindowsVista")  # Optional: Set a style for the app
     app.setApplicationName("Microgrid Energy Management System")
     window = MyApp()
-    window.show()
+    window.showMaximized()
+    # window.view.fitInView(window.scene.sceneRect(), Qt.KeepAspectRatio)
+    # size = window.view.viewport().size()
+    # print(f"Viewport size: {size.width()}x{size.height()}")
     sys.exit(app.exec())
