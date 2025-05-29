@@ -8,7 +8,8 @@ from PySide6.QtCore import Qt, QSize, QRect, QRectF
 from database_connect_dialog import DatabaseConnectDialog  # Assuming this is the auto-generated class from your .ui file
 
 from PySide6.QtGui import QWheelEvent, QMouseEvent
-from drawutils import draw_object_from_json  # Assuming this is your custom drawing utility
+from drawutils import draw_object_from_json, draw_line_from_json  # Assuming this is your custom drawing utility
+from diagram_data import bus1_json, bus2_json, line_json   # Assuming this is your JSON data for the bus diagram
 
 class ZoomPanGraphicsView(QGraphicsView):
     def __init__(self, *args, **kwargs):
@@ -150,28 +151,12 @@ class MyApp(QMainWindow):
         self.view = ZoomPanGraphicsView(self.scene)
         self.setCentralWidget(self.view)
         # self.view.draw_sld()
-        bus_json = {
-        "type": "bus",
-        "id": "bus1",
-        "data": {
-            "name": "Bus 1",
-            "direction": "point",  # horizontal, vertical, point
-            "position": [800, 200],
-            "length": 400,
-            "widthscale": 1.5,
-            "color": "red",
-            "upport": {
-                "size": 0.2,
-                "number": 3
-            },
-            "downport": {
-                "size": 0.2,
-                "number": 2
-            }
-            }
-        }
+       
 
-        draw_object_from_json(self.view.scene(), bus_json)
+        l1, p1 =  draw_object_from_json(self.view.scene(), bus1_json)
+        l2, p2 = draw_object_from_json(self.view.scene(), bus2_json)
+        ports = {**p1, **p2}
+        draw_line_from_json(self.view.scene(), line_json, ports)
 
         # Example item
         # line = QGraphicsLineItem(100, 100, 400, 100)
