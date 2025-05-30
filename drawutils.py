@@ -185,7 +185,8 @@ def draw_cubicle(scene, cubicle_obj, ports, base_point, angle):
         # Transparent square
         rect = QGraphicsRectItem(-size / 2, -size / 2, size, size)
         # rect.setBrush(Qt.transparent)
-        rect.setBrush(QColor("black"))
+        bg_color = scene.backgroundBrush().color()
+        rect.setBrush(QColor(bg_color))
         rect.setPen(Qt.NoPen)
         # Diagonal line from top center to bottom right
         line = QGraphicsLineItem(0, -size / 2, size / 2, size / 2)
