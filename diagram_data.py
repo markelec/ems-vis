@@ -15,7 +15,7 @@ bus1_json = {
         },
         "downport": {
             "margin": 0.1,
-            "number": 5
+            "number": 6
         }
     }
 }
@@ -220,6 +220,34 @@ trafo_json = {
                     "scale": 2.0,
                     "offset": [0, 20],
                     "attach": "bus2:u2"
+                }
+            }
+        ]
+    }
+}
+
+# Inverter element
+inv_json = {
+    "type": "inv",
+    "id": "inv1",
+    "data": {
+        "name": "Inverter 1",
+        "from": "bus1:d5",
+        "point": [
+            [500, 300]
+        ],
+        "color": "red",
+        "linescale": 1.0,
+        "inv_size": 32,
+        "cubicle": [
+            {
+                "type": "breaker",
+                "id": "brk_inv1",
+                "data": {
+                    "color": "red",
+                    "scale": 2.0,
+                    "offset": [0, 20],
+                    "attach": "bus1:d5"
                 }
             }
         ]

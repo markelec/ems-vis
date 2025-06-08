@@ -8,8 +8,8 @@ from PySide6.QtCore import Qt, QSize, QRect, QRectF
 from database_connect_dialog import DatabaseConnectDialog  # Assuming this is the auto-generated class from your .ui file
 
 from PySide6.QtGui import QWheelEvent, QMouseEvent
-from drawutils import draw_object_from_json, draw_line_from_json, draw_load_from_json, draw_generator_from_json, draw_transformer_from_json
-from diagram_data import bus1_json, bus2_json, line_json, line_json2, load_json, gen_json, trafo_json   # Assuming this is your JSON data for the bus diagram
+from drawutils import draw_object_from_json, draw_line_from_json, draw_load_from_json, draw_generator_from_json, draw_transformer_from_json, draw_inverter_from_json
+from diagram_data import bus1_json, bus2_json, line_json, line_json2, load_json, gen_json, trafo_json, inv_json   # Assuming this is your JSON data for the bus diagram
 
 class ZoomPanGraphicsView(QGraphicsView):
     def __init__(self, *args, **kwargs):
@@ -161,6 +161,7 @@ class MyApp(QMainWindow):
         draw_load_from_json(self.view.scene(), self.view, load_json, ports)
         draw_generator_from_json(self.view.scene(), self.view, gen_json, ports)
         draw_transformer_from_json(self.view.scene(), self.view, trafo_json, ports)
+        draw_inverter_from_json(self.view.scene(), self.view, inv_json, ports)
         # Example item
         # line = QGraphicsLineItem(100, 100, 400, 100)
         # line.setPen(QPen(QColor("blue"), 5))

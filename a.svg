@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="40" height="40" viewBox="0 0 40 40"
+     stroke="red" stroke-width="2" fill="none"
+     stroke-linecap="round" stroke-linejoin="round">
+  <!-- Outer rectangle -->
+  <rect x="2" y="2" width="36" height="36" />
+
+  <!-- Diagonal split -->
+  <line x1="4" y1="36" x2="36" y2="4" />
+
+  <!-- AC symbol (~) in top left -->
+  <path d="M6 12 q4 -4 8 0 q4 4 8 0" />
+
+  <!-- DC symbol (=) in bottom right -->
+  <line x1="24" y1="26" x2="34" y2="26" />
+  <line x1="24" y1="30" x2="34" y2="30" />
+</svg>

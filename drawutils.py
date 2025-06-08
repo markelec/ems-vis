@@ -1,6 +1,10 @@
 from PySide6.QtWidgets import QGraphicsScene, QGraphicsLineItem, QGraphicsRectItem, QGraphicsEllipseItem, QGraphicsItemGroup, QGraphicsPolygonItem, QGraphicsSimpleTextItem, QGraphicsTextItem
 from PySide6.QtGui import QPen, QColor, QPolygonF, QFont
-from PySide6.QtCore import QPointF, Qt
+from PySide6.QtCore import QPointF, Qt, QBuffer
+from PySide6.QtSvgWidgets import QGraphicsSvgItem
+from PySide6.QtGui import QTransform
+from PySide6.QtSvg import QSvgRenderer
+from PySide6.QtCore import QByteArray
 
 import math
 
@@ -477,6 +481,103 @@ def draw_transformer_from_json(scene, view, obj, ports):
     ellipse2.setPen(QPen(QColor(color), 2 * linescale))
     ellipse2.setBrush(Qt.NoBrush)
     scene.addItem(ellipse2)
+
+def draw_inverter_from_json(scene, view, obj, ports):
+    obj_type = obj.get("type")
+    if obj_type not in ("inv", "inverter"):
+        raise ValueError("Only 'inv' or 'inverter' objects supported.")
+
+    data = obj.get("data", {})
+    from_port = data.get("from")
+    points_data = data.get("point", [])
+    color = data.get("color", "black")
+    linescale = data.get("linescale", 1.0)
+    symbol_size = data.get("inv_size", 32) * linescale  # You can adjust default size
+
+    if from_port not in ports:
+        print(f"Missing port: {from_port}")
+        return None
+
+    # Build full list of points
+    points = [QPointF(*ports[from_port])]
+    points += [resolve_point(pt, ports) for pt in points_data]
+
+    pen = QPen(QColor(color))
+    pen.setWidthF(2 * linescale)
+
+    # Draw the line as multiple segments (like line)
+    for i in range(len(points) - 1):
+        line = QGraphicsLineItem(points[i].x(), points[i].y(), points[i+1].x(), points[i+1].y())
+        line.setPen(pen)
+        scene.addItem(line)
+
+    # Draw cubicle (only one, at the start)
+    cubicle = data.get("cubicle", [])
+    if cubicle and len(points) >= 2:
+        angle_start = math.degrees(math.atan2(points[1].y() - points[0].y(), points[1].x() - points[0].x()))
+        draw_cubicle(scene, cubicle[0], ports, points[0], angle_start - 90)
+
+    # Draw inverter SVG at the end
+    if len(points) >= 2:
+        p1 = points[-2]
+        p2 = points[-1]
+        dx = p2.x() - p1.x()
+        dy = p2.y() - p1.y()
+        length = (dx**2 + dy**2) ** 0.5
+        if length == 0:
+            return
+        dx /= length
+        dy /= length
+
+        # The end of the line should be at the edge of the symbol
+        center_x = p2.x() + dx * (symbol_size / 2)
+        center_y = p2.y() + dy * (symbol_size / 2)
+
+        # Load and place the SVG
+        # svg_item = QGraphicsSvgItem("inverter.svg")
+        # svg_item.setFlags(svg_item.flags() | svg_item.ItemIgnoresTransformations)
+
+        svg_content = load_svg_with_color("inverter.svg", color)  # Use any color you want
+        svg_item = create_colored_svg_item(svg_content)
+        
+    
+
+        svg_item.setTransform(QTransform().scale(symbol_size / svg_item.boundingRect().width(),
+                                                symbol_size / svg_item.boundingRect().height()))
+        svg_item.setPos(center_x - symbol_size / 2, center_y - symbol_size / 2)
+
+        # Calculate the angle of the last line segment (in degrees)
+        angle = math.degrees(math.atan2(dy, dx))
+        svg_item.setTransformOriginPoint(svg_item.boundingRect().width() / 2, svg_item.boundingRect().height() / 2)
+        svg_item.setRotation(angle - 90)
+
+        scene.addItem(svg_item)
+
+def load_svg_with_color(svg_path, color):
+    try:
+        with open(svg_path, "r", encoding="utf-8") as f:
+            svg_content = f.read()
+    except Exception as e:
+        print(f"Error reading SVG: {e}")
+        return None
+    svg_content = svg_content.replace('stroke="red"', f'stroke="{color}"')
+    print(svg_content)  # Debug: see the SVG
+    return svg_content
+
+def create_colored_svg_item(svg_content):
+    renderer = QSvgRenderer(QByteArray(svg_content.encode('utf-8')))
+    
+    if not renderer.isValid():
+        print("SVG renderer failed to load the SVG!")
+        return None
+    # buffer = QBuffer()
+    # buffer.setData(QByteArray(svg_content.encode('utf-8')))
+    # buffer.open(QBuffer.ReadOnly)
+    item = QGraphicsSvgItem()
+    # item.renderer().load(buffer)
+    item.setSharedRenderer(renderer)
+    item._renderer = renderer
+    return item
 
 
 
