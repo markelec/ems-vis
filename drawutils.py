@@ -579,5 +579,147 @@ def create_colored_svg_item(svg_content):
     item._renderer = renderer
     return item
 
+def draw_svg_element_from_json(scene, view, obj, ports):
+    obj_type = obj.get("type")
+    data = obj.get("data", {})
+    from_port = data.get("from")
+    points_data = data.get("point", [])
+    color = data.get("color", "black")
+    linescale = data.get("linescale", 1.0)
+    symbol_size = data.get(f"{obj_type}_size", 32) * linescale  # e.g., battery_size, inverter_size
+
+    if from_port not in ports:
+        print(f"Missing port: {from_port}")
+        return None
+
+    # Build full list of points
+    points = [QPointF(*ports[from_port])]
+    points += [resolve_point(pt, ports) for pt in points_data]
+
+    pen = QPen(QColor(color))
+    pen.setWidthF(2 * linescale)
+
+    # Draw the line as multiple segments (like line)
+    for i in range(len(points) - 1):
+        line = QGraphicsLineItem(points[i].x(), points[i].y(), points[i+1].x(), points[i+1].y())
+        line.setPen(pen)
+        scene.addItem(line)
+
+    # Draw cubicle (only one, at the start)
+    cubicle = data.get("cubicle", [])
+    if cubicle and len(points) >= 2:
+        angle_start = math.degrees(math.atan2(points[1].y() - points[0].y(), points[1].x() - points[0].x()))
+        draw_cubicle(scene, cubicle[0], ports, points[0], angle_start - 90)
+
+    # Draw SVG at the end
+    if len(points) >= 2:
+        p1 = points[-2]
+        p2 = points[-1]
+        dx = p2.x() - p1.x()
+        dy = p2.y() - p1.y()
+        length = (dx**2 + dy**2) ** 0.5
+        if length == 0:
+            return
+        dx /= length
+        dy /= length
+
+        # The end of the line should be at the edge of the symbol
+        center_x = p2.x() + dx * (symbol_size / 2)
+        center_y = p2.y() + dy * (symbol_size / 2)
+
+        svg_filename = f"{obj_type}.svg"
+        svg_content = load_svg_with_color(svg_filename, color)
+        svg_item = create_colored_svg_item(svg_content)
+
+        if svg_item:
+            svg_item.setTransform(QTransform().scale(
+                symbol_size / svg_item.boundingRect().width(),
+                symbol_size / svg_item.boundingRect().height()))
+            svg_item.setPos(center_x - symbol_size / 2, center_y - symbol_size / 2)
+            angle = math.degrees(math.atan2(dy, dx))
+            svg_item.setTransformOriginPoint(svg_item.boundingRect().width() / 2, svg_item.boundingRect().height() / 2)
+            svg_item.setRotation(angle - 90)
+            scene.addItem(svg_item)
+
+def draw_two_terminal_svg_element_from_json(scene, view, obj, ports):
+    obj_type = obj.get("type")
+    data = obj.get("data", {})
+    from_port = data.get("from")
+    to_port = data.get("to")
+    points_data = data.get("point", [])
+    color = data.get("color", "black")
+    linescale = data.get("linescale", 1.0)
+
+    if from_port not in ports or to_port not in ports:
+        print(f"Missing port: {from_port} or {to_port}")
+        return None
+
+    # Split points into from-side and to-side using "split" marker
+    if "split" in points_data:
+        split_idx = points_data.index("split")
+        from_points = [QPointF(*ports[from_port])] + [resolve_point(pt, ports) for pt in points_data[:split_idx]]
+        to_points = [resolve_point(pt, ports) for pt in points_data[split_idx+1:]] + [QPointF(*ports[to_port])]
+    else:
+        from_points = [QPointF(*ports[from_port])]
+        to_points = [QPointF(*ports[to_port])]
+
+    # Draw lines for from-side and to-side
+    pen = QPen(QColor(color))
+    pen.setWidthF(2 * linescale)
+    for i in range(len(from_points) - 1):
+        line = QGraphicsLineItem(from_points[i].x(), from_points[i].y(), from_points[i+1].x(), from_points[i+1].y())
+        line.setPen(pen)
+        scene.addItem(line)
+    for i in range(len(to_points) - 1):
+        line = QGraphicsLineItem(to_points[i].x(), to_points[i].y(), to_points[i+1].x(), to_points[i+1].y())
+        line.setPen(pen)
+        scene.addItem(line)
+
+    # Get the two points that define the symbol's placement
+    pf = from_points[-1]
+    pt = to_points[0]
+
+    # Vector and distance
+    dx = pt.x() - pf.x()
+    dy = pt.y() - pf.y()
+    length = (dx**2 + dy**2) ** 0.5
+    if length == 0:
+        return
+    angle = math.degrees(math.atan2(dy, dx))
+
+    # Center point for the symbol
+    center_x = (pf.x() + pt.x()) / 2
+    center_y = (pf.y() + pt.y()) / 2
+
+    # Load SVG
+    svg_filename = f"{obj_type}.svg"
+    svg_content = load_svg_with_color(svg_filename, color)
+    svg_item = create_colored_svg_item(svg_content)
+
+    if svg_item:
+        # Scale so that the SVG's height matches the length between pf and pt
+        br = svg_item.boundingRect()
+        scale_factor = length / br.height() if br.height() != 0 else 1.0
+
+        # Center the SVG at the midpoint between pf and pt
+        svg_item.setTransform(QTransform()
+            .translate(center_x - br.width() * scale_factor / 2, center_y - br.height() * scale_factor / 2)
+            .scale(scale_factor, scale_factor)
+        )
+        svg_item.setTransformOriginPoint(br.width() / 2, br.height() / 2)
+        svg_item.setRotation(angle - 90)  # -90 to align vertical SVGs with the connection
+
+        scene.addItem(svg_item)
+
+    # Optionally, handle cubicles as in your transformer code
+    if "cubicle1" in data and data["cubicle1"] and len(from_points) >= 2:
+        angle_start = angle_between(from_points[0], from_points[1])
+        for cub in data["cubicle1"]:
+            draw_cubicle(scene, cub, ports, from_points[0], angle_start - 90)
+    if "cubicle2" in data and data["cubicle2"] and len(to_points) >= 2:
+        angle_end = angle_between(to_points[-1], to_points[-2])
+        for cub in data["cubicle2"]:
+            draw_cubicle(scene, cub, ports, to_points[-1], angle_end - 90)
+
 
 

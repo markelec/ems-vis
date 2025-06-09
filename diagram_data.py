@@ -6,7 +6,7 @@ bus1_json = {
         "name": "Bus 1",
         "direction": "horizontal",
         "position": [200, 200],
-        "length": 300,
+        "length": 500,
         "widthscale": 1.5,
         "color": "red",
         "upport": {
@@ -15,7 +15,7 @@ bus1_json = {
         },
         "downport": {
             "margin": 0.1,
-            "number": 6
+            "number": 7
         }
     }
 }
@@ -27,7 +27,7 @@ bus2_json = {
     "data": {
         "name": "Bus 2",
         "direction": "vertical",
-        "position": [600, 300],
+        "position": [600, 500],
         "length": 200,
         "widthscale": 1.2,
         "color": "red",
@@ -197,7 +197,7 @@ trafo_json = {
             ["bus1:d4:x", 420],         # to-side start point (pt)
             ["bus1:d4:x", "bus2:u2:y"]          # to-side intermediate/end point (optional)
         ],
-        "color": "orange",
+        "color": "red",
         "linescale": 1.0,
         "cubicle1": [
             {
@@ -234,7 +234,7 @@ inv_json = {
         "name": "Inverter 1",
         "from": "bus1:d5",
         "point": [
-            [500, 300]
+            ["bus1:d5:x", 300]
         ],
         "color": "red",
         "linescale": 1.0,
@@ -248,6 +248,33 @@ inv_json = {
                     "scale": 2.0,
                     "offset": [0, 20],
                     "attach": "bus1:d5"
+                }
+            }
+        ]
+    }
+}
+
+bess_json = {
+    "type": "bess",
+    "id": "bess1",
+    "data": {
+        "name": "BESS 1",
+        "from": "bus1:d6",
+        "point": [
+            ['bus1:d6:x', 300]
+        ],
+        "color": "red",
+        "linescale": 1.0,
+        "bess_size": 32,
+        "cubicle": [
+            {
+                "type": "breaker",
+                "id": "brk_bess1",
+                "data": {
+                    "color": "red",
+                    "scale": 2.0,
+                    "offset": [0, 20],
+                    "attach": "bus1:d6"
                 }
             }
         ]
