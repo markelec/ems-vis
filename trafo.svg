@@ -1,8 +1,8 @@
-<svg width="40" height="59.99999999999999" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+<svg width="40" height="54" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
  <!-- Created with SVG-edit - https://github.com/SVG-Edit/svgedit-->
  <g class="layer">
   <title>Layer 1</title>
-  <ellipse cx="20.05002" cy="19.51848" fill="#000000" fill-opacity="0" id="svg_3" rx="18.59545" ry="18.59545" stroke="red" stroke-dasharray="null" stroke-linecap="null" stroke-linejoin="null"/>
-  <ellipse cx="19.97962" cy="38.80556" fill="#000000" fill-opacity="0" id="svg_5" rx="18.59545" ry="18.59545" stroke="red" stroke-dasharray="null" stroke-linecap="null" stroke-linejoin="null"/>
+  <ellipse cx="20.05002" cy="19.32065" fill="#000000" fill-opacity="0" id="svg_3" rx="18.59545" ry="18.59545" stroke="#ff0000" stroke-dasharray="null" stroke-linecap="null" stroke-linejoin="null" stroke-width="2" vector-effect="non-scaling-stroke"/>
+  <ellipse cx="19.8807" cy="34.65126" fill="#000000" fill-opacity="0" id="svg_5" rx="18.59545" ry="18.59545" stroke="#ff0000" stroke-dasharray="null" stroke-linecap="null" stroke-linejoin="null" stroke-width="2" vector-effect="non-scaling-stroke"/>
  </g>
 </svg>

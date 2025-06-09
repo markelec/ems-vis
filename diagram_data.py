@@ -197,7 +197,7 @@ trafo_json = {
             ["bus1:d4:x", 420],         # to-side start point (pt)
             ["bus1:d4:x", "bus2:u2:y"]          # to-side intermediate/end point (optional)
         ],
-        "color": "red",
+        "color": "orange",
         "linescale": 1.0,
         "cubicle1": [
             {

@@ -5,6 +5,7 @@ from PySide6.QtSvgWidgets import QGraphicsSvgItem
 from PySide6.QtGui import QTransform
 from PySide6.QtSvg import QSvgRenderer
 from PySide6.QtCore import QByteArray
+import re
 
 import math
 
@@ -553,15 +554,24 @@ def draw_inverter_from_json(scene, view, obj, ports):
 
         scene.addItem(svg_item)
 
-def load_svg_with_color(svg_path, color):
+def load_svg_with_color(svg_path, color, stroke_width=None):
     try:
         with open(svg_path, "r", encoding="utf-8") as f:
             svg_content = f.read()
     except Exception as e:
         print(f"Error reading SVG: {e}")
         return None
-    svg_content = svg_content.replace('stroke="red"', f'stroke="{color}"')
-    print(svg_content)  # Debug: see the SVG
+
+    # Replace stroke color (assumes original SVG uses stroke="red" or similar)
+    svg_content = re.sub(r'stroke="[^"]*"', f'stroke="{color}"', svg_content)
+
+    # Optionally replace stroke-width
+    if stroke_width is not None:
+        # This will replace all stroke-width attributes
+        svg_content = re.sub(r'stroke-width="[^"]*"', f'stroke-width="{stroke_width}"', svg_content)
+        # If the SVG does not have stroke-width, you may want to add it to <path> or <rect> etc.
+        # (Optional: advanced logic can be added here if needed)
+
     return svg_content
 
 def create_colored_svg_item(svg_content):
@@ -693,7 +703,7 @@ def draw_two_terminal_svg_element_from_json(scene, view, obj, ports):
 
     # Load SVG
     svg_filename = f"{obj_type}.svg"
-    svg_content = load_svg_with_color(svg_filename, color)
+    svg_content = load_svg_with_color(svg_filename, color, 2*linescale)
     svg_item = create_colored_svg_item(svg_content)
 
     if svg_item:
