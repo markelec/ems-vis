@@ -731,5 +731,51 @@ def draw_two_terminal_svg_element_from_json(scene, view, obj, ports):
         for cub in data["cubicle2"]:
             draw_cubicle(scene, cub, ports, to_points[-1], angle_end - 90)
 
+def draw_cubicle_svg(scene, cubicle_obj, ports, base_point, angle):
+    """
+    Draws a cubicle symbol using an SVG file named after c_type.
+    The offset is measured from base_point to the top middle of the SVG.
+    The symbol is rotated to align with the path (angle).
+    """
+    data = cubicle_obj.get("data", {})
+    offset = data.get("offset", [0, 0])
+    color = data.get("color", "red")
+    scale = data.get("scale", 1.0)
+
+    c_type = cubicle_obj.get("type")
+    svg_filename = f"{c_type}.svg"
+
+    # Load SVG content and create item
+    svg_content = load_svg_with_color(svg_filename, color)
+    svg_item = create_colored_svg_item(svg_content)
+    if svg_item is None:
+        print(f"SVG for cubicle type '{c_type}' could not be loaded.")
+        return
+
+    # Scale SVG by 'scale' factor
+    br = svg_item.boundingRect()
+    if br.width() == 0 or br.height() == 0:
+        print(f"SVG bounding rect is invalid for '{svg_filename}'")
+        return
+    symbol_width = br.width() * scale
+    symbol_height = br.height() * scale
+
+    # Offset is measured from base_point to the top middle of the SVG (before rotation)
+    # So, the anchor point is (0.5*width, 0) in SVG local coordinates
+    dx, dy = rotated_offset(offset, angle)
+    cx = base_point.x() + dx
+    cy = base_point.y() + dy
+
+    # Set transform: scale, then move so that (0.5*width, 0) is at (cx, cy), then rotate
+    svg_item.setTransform(
+        QTransform()
+        .translate(cx - symbol_width / 2, cy)
+        .scale(scale, scale)
+    )
+    svg_item.setTransformOriginPoint(br.width() / 2, 0)  # top middle
+    svg_item.setRotation(angle)
+
+    scene.addItem(svg_item)
+
 
 
