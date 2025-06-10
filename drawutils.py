@@ -538,7 +538,7 @@ def draw_inverter_from_json(scene, view, obj, ports):
         # svg_item = QGraphicsSvgItem("inverter.svg")
         # svg_item.setFlags(svg_item.flags() | svg_item.ItemIgnoresTransformations)
 
-        svg_content = load_svg_with_color("inverter.svg", color)  # Use any color you want
+        svg_content = load_svg_with_color("inverter.svg", color, stroke_width=linescale)  # Use any color you want
         svg_item = create_colored_svg_item(svg_content)
         
     
@@ -638,7 +638,7 @@ def draw_svg_element_from_json(scene, view, obj, ports):
         center_y = p2.y() + dy * (symbol_size / 2)
 
         svg_filename = f"{obj_type}.svg"
-        svg_content = load_svg_with_color(svg_filename, color)
+        svg_content = load_svg_with_color(svg_filename, color, stroke_width=linescale)
         svg_item = create_colored_svg_item(svg_content)
 
         if svg_item:
@@ -703,7 +703,7 @@ def draw_two_terminal_svg_element_from_json(scene, view, obj, ports):
 
     # Load SVG
     svg_filename = f"{obj_type}.svg"
-    svg_content = load_svg_with_color(svg_filename, color, 2*linescale)
+    svg_content = load_svg_with_color(svg_filename, color, stroke_width=2*linescale)
     svg_item = create_colored_svg_item(svg_content)
 
     if svg_item:
@@ -731,7 +731,7 @@ def draw_two_terminal_svg_element_from_json(scene, view, obj, ports):
         for cub in data["cubicle2"]:
             draw_cubicle(scene, cub, ports, to_points[-1], angle_end - 90)
 
-def draw_cubicle_svg(scene, cubicle_obj, ports, base_point, angle):
+def draw_cubicle_svg(scene, cubicle_obj, ports, base_point, angle, linescale=None):
     """
     Draws a cubicle symbol using an SVG file named after c_type.
     The offset is measured from base_point to the top middle of the SVG.
@@ -746,7 +746,7 @@ def draw_cubicle_svg(scene, cubicle_obj, ports, base_point, angle):
     svg_filename = f"{c_type}.svg"
 
     # Load SVG content and create item
-    svg_content = load_svg_with_color(svg_filename, color)
+    svg_content = load_svg_with_color(svg_filename, color, stroke_width=linescale)
     svg_item = create_colored_svg_item(svg_content)
     if svg_item is None:
         print(f"SVG for cubicle type '{c_type}' could not be loaded.")
