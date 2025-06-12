@@ -777,5 +777,49 @@ def draw_cubicle_svg(scene, cubicle_obj, ports, base_point, angle, linescale=Non
 
     scene.addItem(svg_item)
 
+def align_bus_x(aligned_bus, ref_bus, aligned_port, ref_port, ports):
+    """
+    Move aligned_bus so that aligned_port (of aligned_bus) is aligned in x with ref_port (of ref_bus).
+    Modifies aligned_bus['data']['position'] in place.
+    """
+    # Get current positions of the ports
+    if aligned_port not in ports or ref_port not in ports:
+        raise ValueError(f"Port not found: {aligned_port} or {ref_port}")
+
+    aligned_x, aligned_y = ports[aligned_port]
+    ref_x, ref_y = ports[ref_port]
+
+    # Get current bus position
+    pos = aligned_bus['data'].get('position', [0, 0])
+    dx = ref_x - aligned_x  # How much to move in x
+
+    # Move the bus in x so that aligned_port.x == ref_port.x
+    new_pos = [pos[0] + dx, pos[1]]
+    aligned_bus['data']['position'] = new_pos
+
+    return aligned_bus
+
+def align_bus_y(aligned_bus, ref_bus, aligned_port, ref_port, ports):
+    """
+    Move aligned_bus so that aligned_port (of aligned_bus) is aligned in y with ref_port (of ref_bus).
+    Modifies aligned_bus['data']['position'] in place.
+    """
+    # Get current positions of the ports
+    if aligned_port not in ports or ref_port not in ports:
+        raise ValueError(f"Port not found: {aligned_port} or {ref_port}")
+
+    aligned_x, aligned_y = ports[aligned_port]
+    ref_x, ref_y = ports[ref_port]
+
+    # Get current bus position
+    pos = aligned_bus['data'].get('position', [0, 0])
+    dy = ref_y - aligned_y  # How much to move in y
+
+    # Move the bus in y so that aligned_port.y == ref_port.y
+    new_pos = [pos[0], pos[1] + dy]
+    aligned_bus['data']['position'] = new_pos
+
+    return aligned_bus
+
 
 
