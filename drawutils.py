@@ -152,27 +152,27 @@ def draw_line_from_json(scene, obj, ports):
     data = obj.get("data", {})
 
     name = data.get("name", obj_id)
-    # from_port = data.get("from")
-    # to_port = data.get("to")
-    # mid_points = data.get("point", [])  # list of [x, y]
+    from_port = data.get("from")
+    to_port = data.get("to")
+    mid_points = data.get("point", [])  # list of intermediate points
     color = data.get("color", "black")
     linescale = data.get("linescale", 1.0)
     cubicle1 = data.get("cubicle1", [])
     cubicle2 = data.get("cubicle2", [])
 
-    # if from_port not in ports or to_port not in ports:
-    #     print(f"Missing ports: {from_port}, {to_port}")
-    #     return None
+    if from_port not in ports or to_port not in ports:
+        print(f"Missing ports: {from_port}, {to_port}")
+        return None
 
-    # Build full list of points
-    points = []
-    for pt in data.get("point", []):
-        if isinstance(pt, str) and (pt.endswith(":x") or pt.endswith(":y")):
-            # For axis-specific, collect as float
-            val = resolve_point(pt, ports)
-            points.append(val)
-        else:
-            points.append(resolve_point(pt, ports))
+    # Build full list of points: start -> intermediate points -> end
+    points = [QPointF(*ports[from_port])]
+    
+    # Add intermediate points
+    for pt in mid_points:
+        points.append(resolve_point(pt, ports))
+    
+    # Add end point
+    points.append(QPointF(*ports[to_port]))
 
     pen = QPen(QColor(color))
     pen.setWidthF(2 * linescale)
@@ -217,6 +217,61 @@ def draw_cubicle(scene, cubicle_obj, ports, base_point, angle):
         item.setPos(cx, cy)
         item.setRotation(angle)
         scene.addItem(item)
+        
+    elif c_type == "recloser":
+        size = 6 * scale
+        # Create rectangle
+        rect = QGraphicsRectItem(-size/2, -size/2, size, size)
+        rect.setBrush(QColor(color))
+        rect.setPen(QPen(Qt.NoPen))
+        
+        # Create text "R" with white color
+        text = QGraphicsSimpleTextItem("R")
+        font_size = int(size * 0.7)  # 80% of rectangle height
+        font = QFont("Arial", font_size)
+        text.setFont(font)
+        text.setBrush(QColor("white"))
+        
+        # Center the text within the rectangle
+        text_rect = text.boundingRect()
+        text.setPos(-text_rect.width()/2, -text_rect.height()/2)
+        
+        # Group them together
+        group = QGraphicsItemGroup()
+        group.addToGroup(rect)
+        group.addToGroup(text)
+        
+        group.setPos(cx, cy)
+        group.setRotation(angle)
+        scene.addItem(group)
+        
+    elif c_type == "lbs":
+        size = 6 * scale
+        # Create rectangle
+        rect = QGraphicsRectItem(-size/2, -size/2, size, size)
+        rect.setBrush(QColor(color))
+        rect.setPen(QPen(Qt.NoPen))
+        
+        # Create text "SF6" with white color
+        text = QGraphicsSimpleTextItem("SF6")
+        font_size = int(size * 0.4)  # 40% of rectangle height
+        font = QFont("Arial", font_size)
+        text.setFont(font)
+        text.setBrush(QColor("white"))
+        
+        # Center the text within the rectangle
+        text_rect = text.boundingRect()
+        text.setPos(-text_rect.width()/2, -text_rect.height()/2)
+        
+        # Group them together
+        group = QGraphicsItemGroup()
+        group.addToGroup(rect)
+        group.addToGroup(text)
+        
+        group.setPos(cx, cy)
+        group.setRotation(angle)
+        scene.addItem(group)
+        
     elif c_type == "switch":
         size = 6 * scale
         # Transparent square
@@ -515,7 +570,7 @@ def draw_inverter_from_json(scene, view, obj, ports):
     # Draw cubicle (only one, at the start)
     cubicle = data.get("cubicle", [])
     if cubicle and len(points) >= 2:
-        angle_start = math.degrees(math.atan2(points[1].y() - points[0].y(), points[1].x() - points[0].x()))
+        angle_start = angle_between(points[0], points[1])
         draw_cubicle(scene, cubicle[0], ports, points[0], angle_start - 90)
 
     # Draw inverter SVG at the end
@@ -596,7 +651,7 @@ def draw_svg_element_from_json(scene, view, obj, ports):
     points_data = data.get("point", [])
     color = data.get("color", "black")
     linescale = data.get("linescale", 1.0)
-    symbol_size = data.get(f"{obj_type}_size", 32) * linescale  # e.g., battery_size, inverter_size
+    symbol_size = data.get(f"{obj_type}_size", 32)  # e.g., battery_size, inverter_size
 
     if from_port not in ports:
         print(f"Missing port: {from_port}")
@@ -638,7 +693,7 @@ def draw_svg_element_from_json(scene, view, obj, ports):
         center_y = p2.y() + dy * (symbol_size / 2)
 
         svg_filename = f"{obj_type}.svg"
-        svg_content = load_svg_with_color(svg_filename, color, stroke_width=linescale)
+        svg_content = load_svg_with_color(svg_filename, color, stroke_width=2*linescale)
         svg_item = create_colored_svg_item(svg_content)
 
         if svg_item:
@@ -820,6 +875,267 @@ def align_bus_y(aligned_bus, ref_bus, aligned_port, ref_port, ports):
     aligned_bus['data']['position'] = new_pos
 
     return aligned_bus
+
+def draw_text_from_json(scene, obj, ports):
+    """
+    Draws text from JSON specification with flexible positioning.
+    
+    Args:
+        scene: QGraphicsScene to add text to
+        obj: JSON object with text data
+        ports: Dictionary of connection points for reference positioning
+        
+    JSON format:
+    {
+        "type": "text",
+        "id": "text1",
+        "data": {
+            "text": "Hello World",
+            "position": [100, 100] or "bus1:d0",  # Base position
+            "font": {
+                "family": "Arial",
+                "size": 12,
+                "bold": false,
+                "italic": false
+            },
+            "color": "black",
+            "anchor": "center",  # Reference point: topleft, topmid, topright, midleft, center, midright, bottomleft, bottommid, bottomright
+            "offset": [10, -5],  # Offset from anchor point
+            "rotation": 0        # Rotation angle in degrees
+        }
+    }
+    """
+    obj_type = obj.get("type")
+    if obj_type != "text":
+        raise ValueError("Only 'text' objects supported.")
+
+    obj_id = obj.get("id")
+    data = obj.get("data", {})
+
+    # Required fields
+    text_content = data.get("text", "")
+    if not text_content:
+        print(f"Warning: Empty text content for {obj_id}")
+        return None
+
+    # Position resolution
+    position = data.get("position", [0, 0])
+    if isinstance(position, str):
+        # Port reference like "bus1:d0"
+        if position in ports:
+            base_x, base_y = ports[position]
+        else:
+            print(f"Port not found: {position}")
+            return None
+    elif isinstance(position, (list, tuple)) and len(position) == 2:
+        # Direct coordinates
+        base_x, base_y = position
+    else:
+        print(f"Invalid position format: {position}")
+        return None
+
+    # Font configuration
+    font_data = data.get("font", {})
+    font_family = font_data.get("family", "Arial")
+    font_size = font_data.get("size", 12)
+    font_bold = font_data.get("bold", False)
+    font_italic = font_data.get("italic", False)
+
+    # Create font
+    font = QFont(font_family, font_size)
+    font.setBold(font_bold)
+    font.setItalic(font_italic)
+
+    # Text styling
+    color = data.get("color", "black")
+    anchor = data.get("anchor", "center").lower()
+    offset = data.get("offset", [0, 0])
+    rotation = data.get("rotation", 0)
+
+    # Create text item
+    text_item = QGraphicsTextItem(text_content)
+    text_item.setFont(font)
+    text_item.setDefaultTextColor(QColor(color))
+
+    # Get bounding rectangle for anchor calculations
+    br = text_item.boundingRect()
+    
+    # Calculate anchor point offsets within the text bounding rectangle
+    anchor_offsets = {
+        "topleft": (0, 0),
+        "topmid": (br.width() / 2, 0),
+        "topright": (br.width(), 0),
+        "midleft": (0, br.height() / 2),
+        "center": (br.width() / 2, br.height() / 2),
+        "midright": (br.width(), br.height() / 2),
+        "bottomleft": (0, br.height()),
+        "bottommid": (br.width() / 2, br.height()),
+        "bottomright": (br.width(), br.height())
+    }
+
+    if anchor not in anchor_offsets:
+        print(f"Warning: Unknown anchor '{anchor}', using 'center'")
+        anchor = "center"
+
+    anchor_dx, anchor_dy = anchor_offsets[anchor]
+    offset_dx, offset_dy = offset
+
+    # Calculate final position
+    # The anchor point of the text should be at (base_x + offset_dx, base_y + offset_dy)
+    final_x = base_x + offset_dx - anchor_dx
+    final_y = base_y + offset_dy - anchor_dy
+
+    # Set position and rotation
+    text_item.setPos(final_x, final_y)
+    
+    if rotation != 0:
+        # Set rotation around the anchor point
+        text_item.setTransformOriginPoint(anchor_dx, anchor_dy)
+        text_item.setRotation(rotation)
+
+    scene.addItem(text_item)
+    return text_item
+
+def draw_diagram_from_dict(scene, view, diagram_dict):
+    """
+    Draws all elements from a diagram dictionary by dispatching to appropriate draw functions.
+    
+    Args:
+        scene: QGraphicsScene to draw on
+        view: QGraphicsView for elements that need view reference
+        diagram_dict: Dictionary containing all diagram elements
+        
+    Expected diagram_dict structure:
+    {
+        "buses": [bus1_json, bus2_json, ...],
+        "lines": [line1_json, line2_json, ...],
+        "loads": [load1_json, load2_json, ...],
+        "generators": [gen1_json, gen2_json, ...],
+        "transformers": [trafo1_json, trafo2_json, ...],
+        "inverters": [inv1_json, inv2_json, ...],
+        "svg_elements": [bess1_json, bess2_json, ...],
+        "two_terminal_elements": [trafo1_json, switch1_json, ...],
+        "texts": [text1_json, text2_json, ...]
+    }
+    """
+    ports = {}  # Collect all connection points
+    drawn_items = {}  # Track drawn items by ID
+    
+    # Function mapping for different element types
+    draw_functions = {
+        "bus": draw_object_from_json,
+        "line": lambda scene, obj, ports: draw_line_from_json(scene, obj, ports),
+        "load": lambda scene, obj, ports: draw_load_from_json(scene, view, obj, ports),
+        "generator": lambda scene, obj, ports: draw_generator_from_json(scene, view, obj, ports),
+        "transformer": lambda scene, obj, ports: draw_transformer_from_json(scene, view, obj, ports),
+        "inverter": lambda scene, obj, ports: draw_inverter_from_json(scene, view, obj, ports),
+        "svg_element": lambda scene, obj, ports: draw_svg_element_from_json(scene, view, obj, ports),
+        "two_terminal_svg": lambda scene, obj, ports: draw_two_terminal_svg_element_from_json(scene, view, obj, ports),
+        "text": lambda scene, obj, ports: draw_text_from_json(scene, obj, ports)
+    }
+    
+    # Drawing order - buses first to establish connection points
+    drawing_order = [
+        ("buses", "bus"),
+        ("lines", "line"),
+        ("loads", "load"), 
+        ("generators", "generator"),
+        ("transformers", "transformer"),
+        ("inverters", "inverter"),
+        ("svg_elements", "svg_element"),
+        ("two_terminal_elements", "two_terminal_svg"),
+        ("texts", "text")
+    ]
+    
+    # Draw elements in order
+    for category, element_type in drawing_order:
+        if category in diagram_dict:
+            elements = diagram_dict[category]
+            if not isinstance(elements, list):
+                elements = [elements]  # Handle single element
+                
+            for element in elements:
+                try:
+                    obj_id = element.get("id", f"unknown_{element_type}")
+                    
+                    # Special handling for buses - they return ports
+                    if element_type == "bus":
+                        result = draw_functions[element_type](scene, element)
+                        if result and len(result) == 2:
+                            line_item, element_ports = result
+                            ports.update(element_ports)
+                            drawn_items[obj_id] = line_item
+                        else:
+                            print(f"Warning: Bus {obj_id} didn't return expected format")
+                    
+                    # All other elements
+                    else:
+                        draw_function = draw_functions.get(element_type)
+                        if draw_function:
+                            if element_type in ["line", "text"]:
+                                # Functions that don't need view parameter
+                                result = draw_function(scene, element, ports)
+                            else:
+                                # Functions that need view parameter
+                                result = draw_function(scene, element, ports)
+                            drawn_items[obj_id] = result
+                        else:
+                            print(f"Warning: No draw function for element type '{element_type}'")
+                            
+                except Exception as e:
+                    print(f"Error drawing {element_type} {obj_id}: {str(e)}")
+                    continue
+    
+    return drawn_items, ports
+
+
+def load_diagram_from_file(file_path):
+    """
+    Load diagram dictionary from a Python file.
+    
+    Args:
+        file_path: Path to Python file containing diagram_dict variable
+        
+    Returns:
+        Dictionary containing all diagram elements
+    """
+    import importlib.util
+    import sys
+    
+    try:
+        spec = importlib.util.spec_from_file_location("diagram_module", file_path)
+        diagram_module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(diagram_module)
+        
+        # Look for 'diagram_dict' variable in the module
+        if hasattr(diagram_module, 'diagram_dict'):
+            return diagram_module.diagram_dict
+        else:
+            print(f"Error: No 'diagram_dict' variable found in {file_path}")
+            return {}
+            
+    except Exception as e:
+        print(f"Error loading diagram from {file_path}: {str(e)}")
+        return {}
+
+
+def draw_diagram_from_file(scene, view, file_path):
+    """
+    Convenience function to load and draw diagram from file in one call.
+    
+    Args:
+        scene: QGraphicsScene to draw on
+        view: QGraphicsView for elements that need view reference  
+        file_path: Path to Python file containing diagram_dict
+        
+    Returns:
+        Tuple of (drawn_items, ports)
+    """
+    diagram_dict = load_diagram_from_file(file_path)
+    if diagram_dict:
+        return draw_diagram_from_dict(scene, view, diagram_dict)
+    else:
+        return {}, {}
 
 
 
