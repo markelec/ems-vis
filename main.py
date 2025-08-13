@@ -210,7 +210,7 @@ class MyApp(QMainWindow):
         drawn_items, ports = draw_diagram_from_file(
             self.view.scene(), 
             self.view, 
-            "complete_diagram.py"
+            "umphang_diagram.py"
         )
         
         # Store for later use if needed

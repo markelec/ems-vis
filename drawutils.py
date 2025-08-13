@@ -73,8 +73,8 @@ def draw_object_from_json(scene: QGraphicsScene, obj: dict):
     length = data.get("length", 200)
 
     # Port configuration
-    upport = data.get("upport", {"size": 0.2, "number": 3})
-    downport = data.get("downport", {"size": 0.2, "number": 3})
+    upport = data.get("upport", {"margin": 0.2, "number": 3})
+    downport = data.get("downport", {"margin": 0.2, "number": 3})
     up_margin = upport.get("margin", 0.2)
     up_count = upport.get("number", 0)
     down_margin = downport.get("margin", 0.2)
@@ -190,14 +190,14 @@ def draw_line_from_json(scene, obj, ports):
 
         for cub in cubicle1:
             angle = angle_start - 90
-            draw_cubicle(scene, cub, ports, points[0], angle)
+            draw_cubicle(scene, cub, ports, points[0], angle, 2*linescale)
 
         for cub in cubicle2:
             angle = angle_end - 90
-            draw_cubicle(scene, cub, ports, points[-1], angle)
+            draw_cubicle(scene, cub, ports, points[-1], angle, 2*linescale)
 
 
-def draw_cubicle(scene, cubicle_obj, ports, base_point, angle):
+def draw_cubicle(scene, cubicle_obj, ports, base_point, angle, linewidth=1):
     data = cubicle_obj.get("data", {})
     offset = data.get("offset", [0, 0])
     color = data.get("color", "red")
@@ -275,15 +275,16 @@ def draw_cubicle(scene, cubicle_obj, ports, base_point, angle):
     elif c_type == "switch":
         size = 6 * scale
         # Transparent square
-        rect = QGraphicsRectItem(-size / 2, -size / 2, size, size)
+        rect = QGraphicsRectItem(-size, -size / 2, 2*size, size)
         # rect.setBrush(Qt.transparent)
         view = scene.views()[0] if scene.views() else None
         bg_color = view.backgroundBrush().color()
         rect.setBrush(QColor(bg_color))
+        
         rect.setPen(Qt.NoPen)
         # Diagonal line from top center to bottom right
-        line = QGraphicsLineItem(0, -size / 2, size / 2, size / 2)
-        line.setPen(QPen(QColor(color), 1.5))
+        line = QGraphicsLineItem(0, -size / 2, size , size / 2)
+        line.setPen(QPen(QColor(color), linewidth))
 
         # Group them together
         group = QGraphicsItemGroup()
