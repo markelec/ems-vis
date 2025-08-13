@@ -143,6 +143,22 @@ def draw_object_from_json(scene: QGraphicsScene, obj: dict):
     return line, ports
 
 
+def draw_connection_point(scene, point, color="red", size=3):
+    """
+    Draw a small circle to indicate a connection point on a bus.
+    
+    Args:
+        scene: QGraphicsScene to draw on
+        point: QPointF location of the connection point
+        color: Color of the connection point
+        size: Radius of the connection point
+    """
+    circle = QGraphicsEllipseItem(point.x() - size, point.y() - size, 2 * size, 2 * size)
+    circle.setBrush(QColor(color))
+    circle.setPen(QPen(QColor(color)))
+    scene.addItem(circle)
+    return circle
+
 def draw_line_from_json(scene, obj, ports):
     obj_type = obj.get("type")
     if obj_type != "line":
@@ -159,6 +175,12 @@ def draw_line_from_json(scene, obj, ports):
     linescale = data.get("linescale", 1.0)
     cubicle1 = data.get("cubicle1", [])
     cubicle2 = data.get("cubicle2", [])
+    
+    # New options for connection points
+    show_start_point = data.get("show_start_point", True)
+    show_end_point = data.get("show_end_point", True)
+    connection_point_color = data.get("connection_point_color", color)
+    connection_point_size = data.get("connection_point_size", 4)
 
     if from_port not in ports or to_port not in ports:
         print(f"Missing ports: {from_port}, {to_port}")
@@ -182,6 +204,13 @@ def draw_line_from_json(scene, obj, ports):
         line = QGraphicsLineItem(points[i].x(), points[i].y(), points[i+1].x(), points[i+1].y())
         line.setPen(pen)
         scene.addItem(line)
+
+    # Draw connection points
+    if show_start_point:
+        draw_connection_point(scene, points[0], connection_point_color, connection_point_size)
+    
+    if show_end_point:
+        draw_connection_point(scene, points[-1], connection_point_color, connection_point_size)
 
     # Draw cubicles
     if len(points) >= 2:
@@ -274,16 +303,32 @@ def draw_cubicle(scene, cubicle_obj, ports, base_point, angle, linewidth=1):
         
     elif c_type == "switch":
         size = 6 * scale
+        direction = data.get("direction", "up_right").lower()  # Default to up_right
+        
         # Transparent square
         rect = QGraphicsRectItem(-size, -size / 2, 2*size, size)
-        # rect.setBrush(Qt.transparent)
         view = scene.views()[0] if scene.views() else None
         bg_color = view.backgroundBrush().color()
         rect.setBrush(QColor(bg_color))
-        
         rect.setPen(Qt.NoPen)
-        # Diagonal line from top center to bottom right
-        line = QGraphicsLineItem(0, -size / 2, size , size / 2)
+        
+        # Define line endpoints based on direction
+        # Format: (start_x, start_y, end_x, end_y)
+        direction_lines = {
+            "up_right": (0, size/2, size, -size/2),      # From center to top-right
+            "up_left": (0, size/2, -size, -size/2),      # From center to top-left
+            "down_right": (0, -size/2, size, size/2),     # From center to bottom-right
+            "down_left": (0, -size/2, -size, size/2)      # From center to bottom-left
+        }
+        
+        if direction in direction_lines:
+            x1, y1, x2, y2 = direction_lines[direction]
+        else:
+            print(f"Warning: Unknown switch direction '{direction}', using 'up_right'")
+            x1, y1, x2, y2 = direction_lines["up_right"]
+        
+        # Create the diagonal line
+        line = QGraphicsLineItem(x1, y1, x2, y2)
         line.setPen(QPen(QColor(color), linewidth))
 
         # Group them together
@@ -312,6 +357,11 @@ def draw_load_from_json(scene, view, obj, ports):
     cubicle = data.get("cubicle", [])
     tri_base = data.get("tri_base", 24)
     tri_height = data.get("tri_height", 30)
+    
+    # New options for connection points
+    show_connection_point = data.get("show_connection_point", False)
+    connection_point_color = data.get("connection_point_color", color)
+    connection_point_size = data.get("connection_point_size", 3)
 
     if from_port not in ports:
         print(f"Missing port: {from_port}")
@@ -330,6 +380,10 @@ def draw_load_from_json(scene, view, obj, ports):
         line.setPen(pen)
         scene.addItem(line)
 
+    # Draw connection point at bus connection
+    if show_connection_point:
+        draw_connection_point(scene, points[0], connection_point_color, connection_point_size)
+
     # Draw cubicle (only one, at the start)
     if cubicle and len(points) >= 2:
         angle_start = angle_between(points[0], points[1])
@@ -347,8 +401,6 @@ def draw_load_from_json(scene, view, obj, ports):
             return
         dx /= length
         dy /= length
-
-        
 
         # Perpendicular vector (for base)
         perp_dx = -dy
@@ -386,6 +438,11 @@ def draw_generator_from_json(scene, view, obj, ports):
     linescale = data.get("linescale", 1.0)
     cubicle = data.get("cubicle", [])
     gen_radius = data.get("gen_radius", 16) * linescale
+    
+    # New options for connection points
+    show_connection_point = data.get("show_connection_point", False)
+    connection_point_color = data.get("connection_point_color", color)
+    connection_point_size = data.get("connection_point_size", 3)
 
     if from_port not in ports:
         print(f"Missing port: {from_port}")
@@ -403,6 +460,10 @@ def draw_generator_from_json(scene, view, obj, ports):
         line = QGraphicsLineItem(points[i].x(), points[i].y(), points[i+1].x(), points[i+1].y())
         line.setPen(pen)
         scene.addItem(line)
+
+    # Draw connection point at bus connection
+    if show_connection_point:
+        draw_connection_point(scene, points[0], connection_point_color, connection_point_size)
 
     # Draw cubicle (only one, at the start)
     if cubicle and len(points) >= 2:
@@ -459,6 +520,12 @@ def draw_transformer_from_json(scene, view, obj, ports):
     points_data = data.get("point", [])
     color = data.get("color", "black")
     linescale = data.get("linescale", 1.0)
+    
+    # New options for connection points
+    show_start_point = data.get("show_start_point", False)
+    show_end_point = data.get("show_end_point", False)
+    connection_point_color = data.get("connection_point_color", color)
+    connection_point_size = data.get("connection_point_size", 3)
 
     if from_port not in ports or to_port not in ports:
         print(f"Missing port: {from_port} or {to_port}")
@@ -502,29 +569,28 @@ def draw_transformer_from_json(scene, view, obj, ports):
         line = QGraphicsLineItem(from_points[i].x(), from_points[i].y(), from_points[i+1].x(), from_points[i+1].y())
         line.setPen(QPen(QColor(color), 2 * linescale))
         scene.addItem(line)
-    # Draw line from pf to circumference of first circle
-    # pf_circ_x = c1x - dx * trafo_radius
-    # pf_circ_y = c1y - dy * trafo_radius
-    # line = QGraphicsLineItem(pf.x(), pf.y(), pf_circ_x, pf_circ_y)
-    # line.setPen(QPen(QColor(color), 2 * linescale))
-    # scene.addItem(line)
 
     for i in range(len(to_points) - 1):
         line = QGraphicsLineItem(to_points[i].x(), to_points[i].y(), to_points[i+1].x(), to_points[i+1].y())
         line.setPen(QPen(QColor(color), 2 * linescale))
         scene.addItem(line)
 
+    # Draw connection points
+    if show_start_point:
+        draw_connection_point(scene, from_points[0], connection_point_color, connection_point_size)
+    
+    if show_end_point:
+        draw_connection_point(scene, to_points[-1], connection_point_color, connection_point_size)
+
     # Draw cubicle1 at the start of from-side
     if "cubicle1" in data and data["cubicle1"] and len(from_points) >= 2:
         angle_start = angle_between(from_points[0], from_points[1])
-        # angle_start = math.degrees(math.atan2(from_points[0].y() - from_points[1].y(), from_points[0].x() - from_points[1].x()))
         for cub in data["cubicle1"]:
             draw_cubicle(scene, cub, ports, from_points[0], angle_start - 90)
 
     # Draw cubicle2 at the end of to-side
     if "cubicle2" in data and data["cubicle2"] and len(to_points) >= 2:
         angle_end = angle_between(to_points[-1], to_points[-2])
-        # angle_end = math.degrees(math.atan2(to_points[-1].y() - to_points[-2].y(), to_points[-1].x() - to_points[-2].x()))
         for cub in data["cubicle2"]:
             draw_cubicle(scene, cub, ports, to_points[-1], angle_end - 90)
 
@@ -549,7 +615,12 @@ def draw_inverter_from_json(scene, view, obj, ports):
     points_data = data.get("point", [])
     color = data.get("color", "black")
     linescale = data.get("linescale", 1.0)
-    symbol_size = data.get("inv_size", 32) * linescale  # You can adjust default size
+    symbol_size = data.get("inv_size", 32) * linescale
+    
+    # New options for connection points
+    show_connection_point = data.get("show_connection_point", False)
+    connection_point_color = data.get("connection_point_color", color)
+    connection_point_size = data.get("connection_point_size", 3)
 
     if from_port not in ports:
         print(f"Missing port: {from_port}")
@@ -567,6 +638,10 @@ def draw_inverter_from_json(scene, view, obj, ports):
         line = QGraphicsLineItem(points[i].x(), points[i].y(), points[i+1].x(), points[i+1].y())
         line.setPen(pen)
         scene.addItem(line)
+
+    # Draw connection point at bus connection
+    if show_connection_point:
+        draw_connection_point(scene, points[0], connection_point_color, connection_point_size)
 
     # Draw cubicle (only one, at the start)
     cubicle = data.get("cubicle", [])
@@ -590,14 +665,8 @@ def draw_inverter_from_json(scene, view, obj, ports):
         center_x = p2.x() + dx * (symbol_size / 2)
         center_y = p2.y() + dy * (symbol_size / 2)
 
-        # Load and place the SVG
-        # svg_item = QGraphicsSvgItem("inverter.svg")
-        # svg_item.setFlags(svg_item.flags() | svg_item.ItemIgnoresTransformations)
-
-        svg_content = load_svg_with_color("inverter.svg", color, stroke_width=linescale)  # Use any color you want
+        svg_content = load_svg_with_color("inverter.svg", color, stroke_width=linescale)
         svg_item = create_colored_svg_item(svg_content)
-        
-    
 
         svg_item.setTransform(QTransform().scale(symbol_size / svg_item.boundingRect().width(),
                                                 symbol_size / svg_item.boundingRect().height()))
@@ -653,6 +722,11 @@ def draw_svg_element_from_json(scene, view, obj, ports):
     color = data.get("color", "black")
     linescale = data.get("linescale", 1.0)
     symbol_size = data.get(f"{obj_type}_size", 32)  # e.g., battery_size, inverter_size
+    
+    # New options for connection points
+    show_connection_point = data.get("show_connection_point", False)
+    connection_point_color = data.get("connection_point_color", color)
+    connection_point_size = data.get("connection_point_size", 3)
 
     if from_port not in ports:
         print(f"Missing port: {from_port}")
@@ -670,6 +744,10 @@ def draw_svg_element_from_json(scene, view, obj, ports):
         line = QGraphicsLineItem(points[i].x(), points[i].y(), points[i+1].x(), points[i+1].y())
         line.setPen(pen)
         scene.addItem(line)
+
+    # Draw connection point at bus connection
+    if show_connection_point:
+        draw_connection_point(scene, points[0], connection_point_color, connection_point_size)
 
     # Draw cubicle (only one, at the start)
     cubicle = data.get("cubicle", [])
@@ -715,6 +793,12 @@ def draw_two_terminal_svg_element_from_json(scene, view, obj, ports):
     points_data = data.get("point", [])
     color = data.get("color", "black")
     linescale = data.get("linescale", 1.0)
+    
+    # New options for connection points
+    show_start_point = data.get("show_start_point", True)
+    show_end_point = data.get("show_end_point", True)
+    connection_point_color = data.get("connection_point_color", color)
+    connection_point_size = data.get("connection_point_size", 4)
 
     if from_port not in ports or to_port not in ports:
         print(f"Missing port: {from_port} or {to_port}")
@@ -740,6 +824,13 @@ def draw_two_terminal_svg_element_from_json(scene, view, obj, ports):
         line = QGraphicsLineItem(to_points[i].x(), to_points[i].y(), to_points[i+1].x(), to_points[i+1].y())
         line.setPen(pen)
         scene.addItem(line)
+
+    # Draw connection points
+    if show_start_point:
+        draw_connection_point(scene, from_points[0], connection_point_color, connection_point_size)
+    
+    if show_end_point:
+        draw_connection_point(scene, to_points[-1], connection_point_color, connection_point_size)
 
     # Get the two points that define the symbol's placement
     pf = from_points[-1]
@@ -781,11 +872,11 @@ def draw_two_terminal_svg_element_from_json(scene, view, obj, ports):
     if "cubicle1" in data and data["cubicle1"] and len(from_points) >= 2:
         angle_start = angle_between(from_points[0], from_points[1])
         for cub in data["cubicle1"]:
-            draw_cubicle(scene, cub, ports, from_points[0], angle_start - 90)
+            draw_cubicle(scene, cub, ports, from_points[0], angle_start - 90, 2*linescale)
     if "cubicle2" in data and data["cubicle2"] and len(to_points) >= 2:
         angle_end = angle_between(to_points[-1], to_points[-2])
         for cub in data["cubicle2"]:
-            draw_cubicle(scene, cub, ports, to_points[-1], angle_end - 90)
+            draw_cubicle(scene, cub, ports, to_points[-1], angle_end - 90, 2*linescale)
 
 def draw_cubicle_svg(scene, cubicle_obj, ports, base_point, angle, linescale=None):
     """

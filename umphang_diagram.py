@@ -5,7 +5,7 @@ from umphang_diagram_data import (
     terminal6_bus_json, terminal7_bus_json, terminal8_bus_json,
     terminal9_bus_json, terminal10_bus_json, terminal11_bus_json,
     terminal12_bus_json, terminal13_bus_json,
-    mae_sot_line_json
+    mae_sot_line_json, bess_tr_json
 )
 
 # Complete diagram dictionary
@@ -37,7 +37,7 @@ diagram_dict = {
         
     ],
     "two_terminal_elements": [
-        
+        bess_tr_json
     ],
     "texts": [
        

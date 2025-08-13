@@ -9,15 +9,15 @@ umphang_bus_json = {
         "name": "22 kV UMPHANG",
         "direction": "horizontal",
         "position": [3*GRID_SIZE_X, 350],
-        "length": 13*GRID_SIZE_X,
+        "length": 14*GRID_SIZE_X,
         "widthscale": 1.5,
         "color": "red",
         "upport": {
-            "margin": 1/12,
+            "margin": 1/14,
             "number": 12
         },
         "downport": {
-            "margin": 1/12,
+            "margin": 1/14,
             "number": 12
         }
     }
@@ -96,13 +96,13 @@ diesel_bus_json = {
     "data": {
         "name": "DIESEL GENERATOR 22kV",
         "direction": "horizontal",
-        "position": [1350, 800],
-        "length": 450,
+        "position": [12*GRID_SIZE_X, 800],
+        "length": 6*GRID_SIZE_X,
         "widthscale": 1.5,
         "color": "red",
         "upport": {
             "margin": 0.1,
-            "number": 1
+            "number": 5
         },
         "downport": {
             "margin": 0.1,
@@ -117,7 +117,7 @@ terminal1_bus_json = {
     "data": {
         "name": "TERMINAL 1 22kV",
         "direction": "point",
-        "position": [449.5, 250],
+        "position": [4.5*GRID_SIZE_X, 250],
         "length": 1,
         "widthscale": 1.0,
         "color": "red",
@@ -138,7 +138,7 @@ terminal2_bus_json = {
     "data": {
         "name": "TERMINAL 2 22kV",
         "direction": "point",
-        "position": [449.5 + 91, 250],
+        "position": [5.5*GRID_SIZE_X, 250],
         "length": 1,
         "widthscale": 1.0,
         "color": "red",
@@ -159,7 +159,7 @@ terminal3_bus_json = {
     "data": {
         "name": "TERMINAL 3 22kV",
         "direction": "point",
-        "position": [449.5 + 2*91, 250],
+        "position": [6.5*GRID_SIZE_X, 250],
         "length": 1,
         "widthscale": 1.0,
         "color": "red",
@@ -180,7 +180,7 @@ terminal4_bus_json = {
     "data": {
         "name": "TERMINAL 4 22kV",
         "direction": "point",
-        "position": [449.5 + 3*91, 250],
+        "position": [7.5*GRID_SIZE_X, 250],
         "length": 1,
         "widthscale": 1.0,
         "color": "red",
@@ -201,7 +201,7 @@ terminal5_bus_json = {
     "data": {
         "name": "TERMINAL 5 22kV",
         "direction": "point",
-        "position": [449.5 + 4*91, 250],
+        "position": [8.5*GRID_SIZE_X, 250],
         "length": 1,
         "widthscale": 1.0,
         "color": "red",
@@ -222,7 +222,7 @@ terminal6_bus_json = {
     "data": {
         "name": "TERMINAL 6 22kV",
         "direction": "point",
-        "position": [449.5 + 5*91, 250],
+        "position": [9.5*GRID_SIZE_X, 250],
         "length": 1,
         "widthscale": 1.0,
         "color": "red",
@@ -243,7 +243,7 @@ terminal7_bus_json = {
     "data": {
         "name": "TERMINAL 7 22kV",
         "direction": "point",
-        "position": [449.5 + 6*91, 250],
+        "position": [10.5*GRID_SIZE_X, 250],
         "length": 1,
         "widthscale": 1.0,
         "color": "red",
@@ -264,7 +264,7 @@ terminal8_bus_json = {
     "data": {
         "name": "TERMINAL 8 22kV",
         "direction": "point",
-        "position": [449.5 + 7*91, 250],
+        "position": [11.5*GRID_SIZE_X, 250],
         "length": 1,
         "widthscale": 1.0,
         "color": "red",
@@ -285,7 +285,7 @@ terminal9_bus_json = {
     "data": {
         "name": "TERMINAL 9 22kV",
         "direction": "point",
-        "position": [449.5 + 8*91, 250],
+        "position": [12.5*GRID_SIZE_X, 250],
         "length": 1,
         "widthscale": 1.0,
         "color": "red",
@@ -306,7 +306,7 @@ terminal10_bus_json = {
     "data": {
         "name": "TERMINAL 10 22kV",
         "direction": "point",
-        "position": [449.5 + 9*91, 250],
+        "position": [13.5*GRID_SIZE_X, 250],
         "length": 1,
         "widthscale": 1.0,
         "color": "red",
@@ -327,7 +327,7 @@ terminal11_bus_json = {
     "data": {
         "name": "TERMINAL 11 22kV",
         "direction": "point",
-        "position": [449.5 + 10*91, 250],
+        "position": [14.5*GRID_SIZE_X, 250],
         "length": 1,
         "widthscale": 1.0,
         "color": "red",
@@ -348,7 +348,7 @@ terminal12_bus_json = {
     "data": {
         "name": "TERMINAL 12 22kV",
         "direction": "point",
-        "position": [449.5 + 11*91, 250],
+        "position": [15.5*GRID_SIZE_X, 250],
         "length": 1,
         "widthscale": 1.0,
         "color": "red",
@@ -369,7 +369,7 @@ terminal13_bus_json = {
     "data": {
         "name": "TERMINAL 13 22kV",
         "direction": "point",
-        "position": [449.5 + 12*91, 250],
+        "position": [16.5*GRID_SIZE_X, 250],
         "length": 1,
         "widthscale": 1.0,
         "color": "red",
@@ -411,6 +411,51 @@ mae_sot_line_json = {
         ]
     }
 }
+
+bess_tr_json = {
+    "type": "trafo",
+    "id": "bess_tr",
+    "data": {
+        "name": "22 / 0.4 KV BESS TR",
+        "from": "umphang_bus:d0",
+        "to": "bess_ac_bus:u2",
+        "point": [
+            [ "umphang_bus:d0:x", 425],
+            "split",
+            ["bess_ac_bus:u2:x", 525]
+        ],
+        "color": "red",
+        "linescale": 1.0,
+        "cubicle1": [
+            {
+                "type": "switch",
+                "id": "umphang_swt1",
+                "data": {
+                    "color": "red",
+                    "scale": 2.0,
+                    "offset": [0, 20],
+                    "attach": "umphang_bus:d0",
+                    "direction": "up_left"
+                }
+            }
+        ],
+        "cubicle2": [
+            {
+                "type": "switch",
+                "id": "bess_ac_swt1",
+                "data": {
+                    "color": "red",
+                    "scale": 2.0,
+                    "offset": [0, 20],
+                    "attach": "bess_ac_bus:u2",
+                    "direction": "up_right"
+                }
+            }
+        ]
+    }
+}
+
+
 
 # BESS Connection Line
 bess_connection_json = {

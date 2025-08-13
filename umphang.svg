@@ -316,5 +316,7 @@
   <line fill="none" id="svg_307" stroke="#000000" x1="420.79" x2="398.58" y1="353.75" y2="331.54"/>
   <line fill="none" id="svg_21" stroke="#000000" x1="420.39" x2="397.45" y1="428.63" y2="405.69"/>
   <line fill="none" id="svg_23" stroke="#000000" x1="1568.86" x2="1545.62" y1="431.06" y2="407.81"/>
+  <circle cx="880.58" cy="493.37" fill="#000000" id="svg_25" r="4.07" stroke="#000000" transform="matrix(1 0 0 1 0 0)"/>
+  <circle cx="420.26" cy="369.55" fill="#000000" id="svg_27" r="4.07" stroke="#000000"/>
  </g>
 </svg>
