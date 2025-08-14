@@ -9,15 +9,15 @@ umphang_bus_json = {
         "name": "22 kV UMPHANG",
         "direction": "horizontal",
         "position": [3*GRID_SIZE_X, 350],
-        "length": 14*GRID_SIZE_X,
+        "length": 13*GRID_SIZE_X,
         "widthscale": 1.5,
         "color": "red",
         "upport": {
-            "margin": 1/14,
+            "margin": 1/26,
             "number": 12
         },
         "downport": {
-            "margin": 1/14,
+            "margin": 1/26,
             "number": 12
         }
     }
@@ -52,16 +52,16 @@ bess_ac_bus_json = {
     "data": {
         "name": "BESS 22kV AC",
         "direction": "horizontal",
-        "position": [GRID_SIZE_X, 600],
-        "length": 7*GRID_SIZE_X,
+        "position": [0.5*GRID_SIZE_X, 600],
+        "length": 6*GRID_SIZE_X*1.5,
         "widthscale": 1.5,
         "color": "red",
         "upport": {
-            "margin": 1/5,
+            "margin": 1/12,
             "number": 5
         },
         "downport": {
-            "margin": 1/5,
+            "margin": 1/12,
             "number": 5
         }
     }
@@ -74,17 +74,17 @@ bess_dc_bus_json = {
     "data": {
         "name": "BESS 22kV DC",
         "direction": "horizontal",
-        "position": [GRID_SIZE_X, 850],
-        "length": 7*GRID_SIZE_X,
+        "position": [0.5*GRID_SIZE_X, 850],
+        "length": 6*GRID_SIZE_X*1.5,
         "widthscale": 1.5,
         "color": "red",
         "upport": {
-            "margin": 1/5,
+            "margin": 1/12,
             "number": 5
         },
         "downport": {
-            "margin": 1/5,
-            "number": 3
+            "margin": 1/12,
+            "number": 5
         }
     }
 }
@@ -117,7 +117,7 @@ terminal1_bus_json = {
     "data": {
         "name": "TERMINAL 1 22kV",
         "direction": "point",
-        "position": [4.5*GRID_SIZE_X, 250],
+        "position": [4*GRID_SIZE_X, 250],
         "length": 1,
         "widthscale": 1.0,
         "color": "red",
@@ -138,7 +138,7 @@ terminal2_bus_json = {
     "data": {
         "name": "TERMINAL 2 22kV",
         "direction": "point",
-        "position": [5.5*GRID_SIZE_X, 250],
+        "position": [5*GRID_SIZE_X, 250],
         "length": 1,
         "widthscale": 1.0,
         "color": "red",
@@ -159,7 +159,7 @@ terminal3_bus_json = {
     "data": {
         "name": "TERMINAL 3 22kV",
         "direction": "point",
-        "position": [6.5*GRID_SIZE_X, 250],
+        "position": [6*GRID_SIZE_X, 250],
         "length": 1,
         "widthscale": 1.0,
         "color": "red",
@@ -180,7 +180,7 @@ terminal4_bus_json = {
     "data": {
         "name": "TERMINAL 4 22kV",
         "direction": "point",
-        "position": [7.5*GRID_SIZE_X, 250],
+        "position": [7*GRID_SIZE_X, 250],
         "length": 1,
         "widthscale": 1.0,
         "color": "red",
@@ -201,7 +201,7 @@ terminal5_bus_json = {
     "data": {
         "name": "TERMINAL 5 22kV",
         "direction": "point",
-        "position": [8.5*GRID_SIZE_X, 250],
+        "position": [8*GRID_SIZE_X, 250],
         "length": 1,
         "widthscale": 1.0,
         "color": "red",
@@ -222,7 +222,7 @@ terminal6_bus_json = {
     "data": {
         "name": "TERMINAL 6 22kV",
         "direction": "point",
-        "position": [9.5*GRID_SIZE_X, 250],
+        "position": [9*GRID_SIZE_X, 250],
         "length": 1,
         "widthscale": 1.0,
         "color": "red",
@@ -243,7 +243,7 @@ terminal7_bus_json = {
     "data": {
         "name": "TERMINAL 7 22kV",
         "direction": "point",
-        "position": [10.5*GRID_SIZE_X, 250],
+        "position": [10*GRID_SIZE_X, 250],
         "length": 1,
         "widthscale": 1.0,
         "color": "red",
@@ -264,7 +264,7 @@ terminal8_bus_json = {
     "data": {
         "name": "TERMINAL 8 22kV",
         "direction": "point",
-        "position": [11.5*GRID_SIZE_X, 250],
+        "position": [11*GRID_SIZE_X, 250],
         "length": 1,
         "widthscale": 1.0,
         "color": "red",
@@ -285,7 +285,7 @@ terminal9_bus_json = {
     "data": {
         "name": "TERMINAL 9 22kV",
         "direction": "point",
-        "position": [12.5*GRID_SIZE_X, 250],
+        "position": [12*GRID_SIZE_X, 250],
         "length": 1,
         "widthscale": 1.0,
         "color": "red",
@@ -306,7 +306,7 @@ terminal10_bus_json = {
     "data": {
         "name": "TERMINAL 10 22kV",
         "direction": "point",
-        "position": [13.5*GRID_SIZE_X, 250],
+        "position": [13*GRID_SIZE_X, 250],
         "length": 1,
         "widthscale": 1.0,
         "color": "red",
@@ -327,7 +327,7 @@ terminal11_bus_json = {
     "data": {
         "name": "TERMINAL 11 22kV",
         "direction": "point",
-        "position": [14.5*GRID_SIZE_X, 250],
+        "position": [14*GRID_SIZE_X, 250],
         "length": 1,
         "widthscale": 1.0,
         "color": "red",
@@ -348,7 +348,7 @@ terminal12_bus_json = {
     "data": {
         "name": "TERMINAL 12 22kV",
         "direction": "point",
-        "position": [15.5*GRID_SIZE_X, 250],
+        "position": [15*GRID_SIZE_X, 250],
         "length": 1,
         "widthscale": 1.0,
         "color": "red",
@@ -369,7 +369,7 @@ terminal13_bus_json = {
     "data": {
         "name": "TERMINAL 13 22kV",
         "direction": "point",
-        "position": [16.5*GRID_SIZE_X, 250],
+        "position": [16*GRID_SIZE_X, 250],
         "length": 1,
         "widthscale": 1.0,
         "color": "red",
@@ -417,10 +417,10 @@ bess_tr_json = {
     "id": "bess_tr",
     "data": {
         "name": "22 / 0.4 KV BESS TR",
-        "from": "umphang_bus:d0",
+        "from": "umphang_bus:d1",
         "to": "bess_ac_bus:u2",
         "point": [
-            [ "umphang_bus:d0:x", 425],
+            [ "umphang_bus:d1:x", 425],
             "split",
             ["bess_ac_bus:u2:x", 525]
         ],
@@ -434,7 +434,7 @@ bess_tr_json = {
                     "color": "red",
                     "scale": 2.0,
                     "offset": [0, 20],
-                    "attach": "umphang_bus:d0",
+                    "attach": "umphang_bus:d1",
                     "direction": "up_left"
                 }
             }
@@ -455,7 +455,220 @@ bess_tr_json = {
     }
 }
 
+bess_inv1_json = {
+    "type": "inverter",
+    "id": "bess_inv1",
+    "data": {
+        "name": "BESS Inverter 1",
+        "from": "bess_ac_bus:d0",
+        "to": "bess_dc_bus:u0",
+        "point": [
+            [ "bess_ac_bus:d0:x", 675],
+            "split",
+            ["bess_dc_bus:u0:x", 775]
+        ],
+        "color": "red",
+        "linescale": 1.0,
+        "cubicle1": [
+            {
+                "type": "switch",
+                "id": "bess_inv_ac_swt1",
+                "data": {
+                    "color": "red",
+                    "scale": 2.0,
+                    "offset": [0, 20],
+                    "attach": "bess_ac_bus:d0",
+                    "direction": "up_left"
+                }
+            }
+        ],
+        "cubicle2": [
+            {
+                "type": "switch",
+                "id": "bess_inv_dc_swt1",
+                "data": {
+                    "color": "red",
+                    "scale": 2.0,
+                    "offset": [0, 20],
+                    "attach": "bess_dc_bus:u0",
+                    "direction": "up_right"
+                }
+            }
+        ]
+    }
+}
 
+bess_inv2_json = {
+    "type": "inverter",
+    "id": "bess_inv2",
+    "data": {
+        "name": "BESS Inverter 2",
+        "from": "bess_ac_bus:d1",
+        "to": "bess_dc_bus:u1",
+        "point": [
+            [ "bess_ac_bus:d1:x", 675],
+            "split",
+            ["bess_dc_bus:u1:x", 775]
+        ],
+        "color": "red",
+        "linescale": 1.0,
+        "cubicle1": [
+            {
+                "type": "switch",
+                "id": "bess_inv_ac_swt1",
+                "data": {
+                    "color": "red",
+                    "scale": 2.0,
+                    "offset": [0, 20],
+                    "attach": "bess_ac_bus:d1",
+                    "direction": "up_left"
+                }
+            }
+        ],
+        "cubicle2": [
+            {
+                "type": "switch",
+                "id": "bess_inv_dc_swt1",
+                "data": {
+                    "color": "red",
+                    "scale": 2.0,
+                    "offset": [0, 20],
+                    "attach": "bess_dc_bus:u1",
+                    "direction": "up_right"
+                }
+            }
+        ]
+    }
+}
+
+bess_inv3_json = {
+    "type": "inverter",
+    "id": "bess_inv3",
+    "data": {
+        "name": "BESS Inverter 3",
+        "from": "bess_ac_bus:d2",
+        "to": "bess_dc_bus:u2",
+        "point": [
+            [ "bess_ac_bus:d2:x", 675],
+            "split",
+            ["bess_dc_bus:u2:x", 775]
+        ],
+        "color": "red",
+        "linescale": 1.0,
+        "cubicle1": [
+            {
+                "type": "switch",
+                "id": "bess_inv_ac_swt1",
+                "data": {
+                    "color": "red",
+                    "scale": 2.0,
+                    "offset": [0, 20],
+                    "attach": "bess_ac_bus:d2",
+                    "direction": "up_left"
+                }
+            }
+        ],
+        "cubicle2": [
+            {
+                "type": "switch",
+                "id": "bess_inv_dc_swt1",
+                "data": {
+                    "color": "red",
+                    "scale": 2.0,
+                    "offset": [0, 20],
+                    "attach": "bess_dc_bus:u2",
+                    "direction": "up_right"
+                }
+            }
+        ]
+    }
+}
+
+bess_inv4_json = {
+    "type": "inverter",
+    "id": "bess_inv4",
+    "data": {
+        "name": "BESS Inverter 4",
+        "from": "bess_ac_bus:d3",
+        "to": "bess_dc_bus:u3",
+        "point": [
+            [ "bess_ac_bus:d3:x", 675],
+            "split",
+            ["bess_dc_bus:u3:x", 775]
+        ],
+        "color": "red",
+        "linescale": 1.0,
+        "cubicle1": [
+            {
+                "type": "switch",
+                "id": "bess_inv_ac_swt1",
+                "data": {
+                    "color": "red",
+                    "scale": 2.0,
+                    "offset": [0, 20],
+                    "attach": "bess_ac_bus:d3",
+                    "direction": "up_left"
+                }
+            }
+        ],
+        "cubicle2": [
+            {
+                "type": "switch",
+                "id": "bess_inv_dc_swt1",
+                "data": {
+                    "color": "red",
+                    "scale": 2.0,
+                    "offset": [0, 20],
+                    "attach": "bess_dc_bus:u3",
+                    "direction": "up_right"
+                }
+            }
+        ]
+    }
+}
+
+bess_inv5_json = {
+    "type": "inverter",
+    "id": "bess_inv5",
+    "data": {
+        "name": "BESS Inverter 5",
+        "from": "bess_ac_bus:d4",
+        "to": "bess_dc_bus:u4",
+        "point": [
+            [ "bess_ac_bus:d4:x", 675],
+            "split",
+            ["bess_dc_bus:u4:x", 775]
+        ],
+        "color": "red",
+        "linescale": 1.0,
+        "cubicle1": [
+            {
+                "type": "switch",
+                "id": "bess_inv_ac_swt1",
+                "data": {
+                    "color": "red",
+                    "scale": 2.0,
+                    "offset": [0, 20],
+                    "attach": "bess_ac_bus:d4",
+                    "direction": "up_left"
+                }
+            }
+        ],
+        "cubicle2": [
+            {
+                "type": "switch",
+                "id": "bess_inv_dc_swt1",
+                "data": {
+                    "color": "red",
+                    "scale": 2.0,
+                    "offset": [0, 20],
+                    "attach": "bess_dc_bus:u4",
+                    "direction": "up_right"
+                }
+            }
+        ]
+    }
+}
 
 # BESS Connection Line
 bess_connection_json = {

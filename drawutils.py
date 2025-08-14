@@ -753,7 +753,7 @@ def draw_svg_element_from_json(scene, view, obj, ports):
     cubicle = data.get("cubicle", [])
     if cubicle and len(points) >= 2:
         angle_start = math.degrees(math.atan2(points[1].y() - points[0].y(), points[1].x() - points[0].x()))
-        draw_cubicle(scene, cubicle[0], ports, points[0], angle_start - 90)
+        draw_cubicle(scene, cubicle[0], ports, points[0], angle_start - 90, 2*linescale)
 
     # Draw SVG at the end
     if len(points) >= 2:
