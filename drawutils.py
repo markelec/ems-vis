@@ -679,7 +679,7 @@ def draw_inverter_from_json(scene, view, obj, ports):
 
         scene.addItem(svg_item)
 
-def load_svg_with_color(svg_path, color, stroke_width=None):
+def load_svg_with_color(svg_path, color, stroke_width=None, text_color="white"):
     try:
         with open(svg_path, "r", encoding="utf-8") as f:
             svg_content = f.read()
@@ -687,15 +687,37 @@ def load_svg_with_color(svg_path, color, stroke_width=None):
         print(f"Error reading SVG: {e}")
         return None
 
-    # Replace stroke color (assumes original SVG uses stroke="red" or similar)
+    # Replace stroke and fill colors for non-text elements
+    # Replace all stroke colors
     svg_content = re.sub(r'stroke="[^"]*"', f'stroke="{color}"', svg_content)
+    
+    # Replace fill colors ONLY for elements that already have fill attribute, BUT NOT fill="none"
+    svg_content = re.sub(r'fill="(?!none")[^"]*"', f'fill="{color}"', svg_content)
 
-    # Optionally replace stroke-width
+    # Handle text elements specifically
+    if text_color is not None:
+        # For text elements, override stroke and fill with text_color and remove stroke-width
+        # Replace stroke color for text elements
+        svg_content = re.sub(r'(<text[^>]*?)stroke="[^"]*"', rf'\1stroke="{text_color}"', svg_content)
+        # Add stroke color if text doesn't have it
+        svg_content = re.sub(r'(<text(?![^>]*stroke=)[^>]*?)>', rf'\1 stroke="{text_color}">', svg_content)
+        
+        # Replace fill color for text elements (only if they already have fill and it's not "none")
+        svg_content = re.sub(r'(<text[^>]*?)fill="(?!none")[^"]*"', rf'\1fill="{text_color}"', svg_content)
+        # Add fill color if text doesn't have it
+        svg_content = re.sub(r'(<text(?![^>]*fill=)[^>]*?)>', rf'\1 fill="{text_color}">', svg_content)
+        
+        # Remove stroke-width from text elements
+        svg_content = re.sub(r'(<text[^>]*?)stroke-width="[^"]*"([^>]*?>)', rf'\1\2', svg_content)
+
+    # Apply stroke-width to non-text elements only
     if stroke_width is not None:
-        # This will replace all stroke-width attributes
+        # This will replace stroke-width for all elements first
         svg_content = re.sub(r'stroke-width="[^"]*"', f'stroke-width="{stroke_width}"', svg_content)
-        # If the SVG does not have stroke-width, you may want to add it to <path> or <rect> etc.
-        # (Optional: advanced logic can be added here if needed)
+        
+        # Then remove stroke-width from text elements again (in case they got it added above)
+        if text_color is not None:
+            svg_content = re.sub(r'(<text[^>]*?)stroke-width="[^"]*"([^>]*?>)', rf'\1\2', svg_content)
 
     return svg_content
 
@@ -792,6 +814,7 @@ def draw_two_terminal_svg_element_from_json(scene, view, obj, ports):
     to_port = data.get("to")
     points_data = data.get("point", [])
     color = data.get("color", "black")
+    text_color = data.get("text_color", None)  # New parameter for text color
     linescale = data.get("linescale", 1.0)
     
     # New options for connection points
@@ -848,9 +871,9 @@ def draw_two_terminal_svg_element_from_json(scene, view, obj, ports):
     center_x = (pf.x() + pt.x()) / 2
     center_y = (pf.y() + pt.y()) / 2
 
-    # Load SVG
+    # Load SVG with text_color parameter
     svg_filename = f"{obj_type}.svg"
-    svg_content = load_svg_with_color(svg_filename, color, stroke_width=2*linescale)
+    svg_content = load_svg_with_color(svg_filename, color, stroke_width=2*linescale, text_color=text_color)
     svg_item = create_colored_svg_item(svg_content)
 
     if svg_item:

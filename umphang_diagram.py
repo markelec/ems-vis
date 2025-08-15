@@ -7,8 +7,12 @@ from umphang_data.bus_data import (
     terminal12_bus_json, terminal13_bus_json,
 )
 
-from umphang_data.line_data import mae_sot_line_json
-from umphang_data.tr_data import bess_tr_json
+from umphang_data.line_data import (
+    mae_sot_line_json, recloser1_line_json, 
+    section1_line_json, section2_line_json, recloser2_line_json,
+    section3_line_json, section4_line_json
+)
+from umphang_data.tr_data import bess_tr_json, gen_tr_json
 from umphang_data.inv_data import (
     bess_inv1_json, bess_inv2_json, bess_inv3_json, bess_inv4_json, bess_inv5_json
 )
@@ -17,6 +21,10 @@ from umphang_data.bess_data import (
 )
 
 from umphang_data.load_data import load1_json, load2_json, load3_json, load4_json
+
+from umphang_data.gen_data import gen1_json, gen2_json, gen3_json, gen4_json, gen5_json
+
+from umphang_data.avr_data import avr1_json, avr2_json
 
 # Complete diagram dictionary
 diagram_dict = {
@@ -29,7 +37,9 @@ diagram_dict = {
         terminal12_bus_json, terminal13_bus_json,
     ],
     "lines": [
-        mae_sot_line_json
+        mae_sot_line_json, recloser1_line_json,
+        section1_line_json, section2_line_json, recloser2_line_json,
+        section3_line_json, section4_line_json
     ],
     "loads": [
         
@@ -44,10 +54,13 @@ diagram_dict = {
         
     ],
     "svg_elements": [
-        bess1_json, bess2_json, bess3_json, load1_json, load2_json, load3_json, load4_json
+        bess1_json, bess2_json, bess3_json, load1_json, load2_json, load3_json, load4_json,
+        gen1_json, gen2_json, gen3_json, gen4_json, gen5_json
     ],
     "two_terminal_elements": [
-        bess_tr_json, bess_inv1_json, bess_inv2_json, bess_inv3_json, bess_inv4_json, bess_inv5_json
+        bess_tr_json, gen_tr_json,
+        bess_inv1_json, bess_inv2_json, bess_inv3_json, bess_inv4_json, bess_inv5_json,
+        avr1_json, avr2_json
     ],
     "texts": [
        

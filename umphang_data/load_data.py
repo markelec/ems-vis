@@ -21,7 +21,7 @@ load1_json = {
                 "data": {
                     "color": "red",
                     "scale": 2.0,
-                    "offset": [0, 20],
+                    "offset": [0, 30],
                     "attach": "umphang_bus:d7",
                     "direction": "up_left"
                 }
@@ -51,7 +51,7 @@ load2_json = {
                 "data": {
                     "color": "red",
                     "scale": 2.0,
-                    "offset": [0, 20],
+                    "offset": [0, 30],
                     "attach": "umphang_bus:d8",
                     "direction": "up_left"
                 }
@@ -81,7 +81,7 @@ load3_json = {
                 "data": {
                     "color": "red",
                     "scale": 2.0,
-                    "offset": [0, 20],
+                    "offset": [0, 30],
                     "attach": "umphang_bus:d9",
                     "direction": "up_left"
                 }
@@ -111,7 +111,7 @@ load4_json = {
                 "data": {
                     "color": "red",
                     "scale": 2.0,
-                    "offset": [0, 20],
+                    "offset": [0, 30],
                     "attach": "umphang_bus:d10",
                     "direction": "up_left"
                 }
