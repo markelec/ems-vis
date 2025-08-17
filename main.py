@@ -195,7 +195,7 @@ class MyApp(QMainWindow):
         # Tab 1: Single Line Diagram (original graphics view)
         self.tab1 = QWidget()
         self.scene = QGraphicsScene()
-        self.scene.setSceneRect(0, 0, 2000, 1000)
+        self.scene.setSceneRect(0, 0, 2000, 1200)
         
         self.view = ZoomPanGraphicsView(self.scene)
         
@@ -327,7 +327,7 @@ if __name__ == "__main__":
     app.setApplicationName("Microgrid Energy Management System")
     window = MyApp()
     window.showMaximized()
-    # window.view.fitInView(window.scene.sceneRect(), Qt.KeepAspectRatio)
+    window.view.fitInView(window.scene.sceneRect(), Qt.KeepAspectRatio)
     # size = window.view.viewport().size()
     # print(f"Viewport size: {size.width()}x{size.height()}")
     sys.exit(app.exec())

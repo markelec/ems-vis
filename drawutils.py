@@ -25,13 +25,66 @@ def resolve_axis(val, ports):
     if isinstance(val, (int, float)):
         return val
     if isinstance(val, str):
-        parts = val.split(":")
-        if len(parts) == 3:
-            key = f"{parts[0]}:{parts[1]}"
-            axis = parts[2]
-            if key in ports:
-                x, y = ports[key]
-                return x if axis == "x" else y
+        # Check for arithmetic operations (+/-)
+        if '+' in val or '-' in val:
+            # Find the operator position (should be after the axis specifier)
+            operator_pos = -1
+            operator = None
+            
+            # Look for + or - after the colon and axis
+            for i, char in enumerate(val):
+                if char in ['+', '-'] and i > 0:
+                    # Make sure it's after a valid axis specifier (x or y)
+                    if i > 0 and val[i-1] in ['x', 'y']:
+                        operator_pos = i
+                        operator = char
+                        break
+            
+            if operator_pos > 0:
+                # Split at the operator position
+                port_ref = val[:operator_pos].strip()
+                offset_str = val[operator_pos+1:].strip()
+                
+                # Parse the offset value
+                try:
+                    offset = float(offset_str)
+                except ValueError:
+                    raise ValueError(f"Invalid offset in expression: {val}")
+                
+                # Parse port reference (e.g., "bus1:u1:x")
+                port_parts = port_ref.split(":")
+                if len(port_parts) == 3:
+                    key = f"{port_parts[0]}:{port_parts[1]}"
+                    axis = port_parts[2]
+                    if key in ports:
+                        x, y = ports[key]
+                        base_value = x if axis == "x" else y
+                        
+                        # Apply operator
+                        if operator == '+':
+                            return base_value + offset
+                        elif operator == '-':
+                            return base_value - offset
+                    else:
+                        raise ValueError(f"Port not found: {key}")
+                else:
+                    raise ValueError(f"Invalid port reference in expression: {port_ref}")
+            else:
+                raise ValueError(f"Invalid arithmetic expression: {val}")
+        else:
+            # Original logic for simple port reference
+            parts = val.split(":")
+            if len(parts) == 3:
+                key = f"{parts[0]}:{parts[1]}"
+                axis = parts[2]
+                if key in ports:
+                    x, y = ports[key]
+                    return x if axis == "x" else y
+                else:
+                    raise ValueError(f"Port not found: {key}")
+            else:
+                raise ValueError(f"Invalid port reference format: {val}")
+    
     raise ValueError(f"Cannot resolve axis: {val}")
 
 def resolve_point(pt, ports):
@@ -774,8 +827,8 @@ def draw_svg_element_from_json(scene, view, obj, ports):
     # Draw cubicle (only one, at the start)
     cubicle = data.get("cubicle", [])
     if cubicle and len(points) >= 2:
-        angle_start = math.degrees(math.atan2(points[1].y() - points[0].y(), points[1].x() - points[0].x()))
-        draw_cubicle(scene, cubicle[0], ports, points[0], angle_start - 90, 2*linescale)
+        angle_start = angle_between(points[0], points[1])
+        draw_cubicle(scene, cubicle[0], ports, points[0], angle_start - 90)
 
     # Draw SVG at the end
     if len(points) >= 2:
@@ -1006,7 +1059,7 @@ def draw_text_from_json(scene, obj, ports):
         "id": "text1",
         "data": {
             "text": "Hello World",
-            "position": [100, 100] or "bus1:d0",  # Base position
+            "position": [100, 100] or "bus1:d0" or ["bus1:d0:x", "bus2:u1:y"],  # Base position
             "font": {
                 "family": "Arial",
                 "size": 12,
@@ -1033,18 +1086,58 @@ def draw_text_from_json(scene, obj, ports):
         print(f"Warning: Empty text content for {obj_id}")
         return None
 
-    # Position resolution
+    # Position resolution - now supports multiple formats
     position = data.get("position", [0, 0])
+    
     if isinstance(position, str):
-        # Port reference like "bus1:d0"
-        if position in ports:
-            base_x, base_y = ports[position]
+        # Check if it's an axis reference like "bus1:u1:x" or "bus1:u1:y"
+        if position.count(':') == 2:
+            # Axis reference - use resolve_axis
+            try:
+                # For axis reference, we need both x and y, so we'll extract the base port
+                parts = position.split(':')
+                if len(parts) == 3:
+                    base_port = f"{parts[0]}:{parts[1]}"
+                    axis = parts[2]
+                    
+                    if base_port in ports:
+                        port_x, port_y = ports[base_port]
+                        if axis == 'x':
+                            # Use the x from the specified port, but we need a y coordinate
+                            # We'll use the same port's y coordinate
+                            base_x = resolve_axis(position, ports)
+                            base_y = port_y
+                        elif axis == 'y':
+                            # Use the y from the specified port, but we need an x coordinate  
+                            # We'll use the same port's x coordinate
+                            base_x = port_x
+                            base_y = resolve_axis(position, ports)
+                        else:
+                            raise ValueError(f"Invalid axis '{axis}' in position: {position}")
+                    else:
+                        print(f"Port not found: {base_port}")
+                        return None
+                else:
+                    raise ValueError(f"Invalid axis reference format: {position}")
+            except Exception as e:
+                print(f"Error resolving axis position '{position}': {e}")
+                return None
         else:
-            print(f"Port not found: {position}")
-            return None
+            # Regular port reference like "bus1:d0"
+            if position in ports:
+                base_x, base_y = ports[position]
+            else:
+                print(f"Port not found: {position}")
+                return None
+                
     elif isinstance(position, (list, tuple)) and len(position) == 2:
-        # Direct coordinates
-        base_x, base_y = position
+        # Could be direct coordinates or axis references
+        try:
+            base_x = resolve_axis(position[0], ports)
+            base_y = resolve_axis(position[1], ports)
+        except Exception as e:
+            print(f"Error resolving position {position}: {e}")
+            return None
     else:
         print(f"Invalid position format: {position}")
         return None

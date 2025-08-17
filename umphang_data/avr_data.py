@@ -9,9 +9,9 @@ avr1_json = {
         "from": "terminal1_bus:d0",
         "to": "terminal2_bus:u0",
         "point": [
-            [ 430, 250],
+            [ "terminal1_bus:d0:x+30", 250],
             "split",
-            [ 470, 250]
+            [ "terminal2_bus:u0:x-30", 250]
         ],
         "color": "red",
         "text_color": "red",
@@ -38,12 +38,12 @@ avr2_json = {
     "id": "avr2",
     "data": {
         "name": "AVR 2",
-        "from": "terminal5_bus:d0",
-        "to": "terminal6_bus:u0",
+        "from": "terminal6_bus:d0",
+        "to": "terminal7_bus:u0",
         "point": [
-            [ 830, 250],
+            [ "terminal6_bus:d0:x+30", 250],
             "split",
-            [ 870, 250]
+            [ "terminal7_bus:u0:x-30", 250]
         ],
         "color": "red",
         "text_color": "red",
@@ -51,13 +51,45 @@ avr2_json = {
         "cubicle1": [
             {
                 "type": "switch",
-                "id": "terminal5_swt1",
+                "id": "terminal6_swt1",
                 "data": {
                     "color": "red",
                     "scale": 2.0,
                     "offset": [0, 20],
-                    "attach": "terminal5_bus:d0",
+                    "attach": "terminal6_bus:d0",
                     "direction": "up_left"
+                }
+            }
+        ]
+        
+    }
+}
+
+avr3_json = {
+    "type": "avr",
+    "id": "avr3",
+    "data": {
+        "name": "AVR 3",
+        "from": "terminal11_bus:d0",
+        "to": "terminal12_bus:u0",
+        "point": [
+            [ "terminal11_bus:d0:x+30", 250],
+            "split",
+            [ "terminal12_bus:u0:x-30", 250]
+        ],
+        "color": "red",
+        "text_color": "red",
+        "linescale": 1.0,
+        "cubicle2": [
+            {
+                "type": "switch",
+                "id": "terminal12_swt1",
+                "data": {
+                    "color": "red",
+                    "scale": 2.0,
+                    "offset": [0, 20],
+                    "attach": "terminal12_bus:d0",
+                    "direction": "up_right"
                 }
             }
         ]
