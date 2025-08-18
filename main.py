@@ -199,11 +199,44 @@ class MyApp(QMainWindow):
         
         self.view = ZoomPanGraphicsView(self.scene)
         
-        # Add the view to tab1
+        # Create header panel
+        self.header_panel = QWidget()
+        self.header_panel.setFixedHeight(50)  # Fixed height for header
+        self.header_panel.setStyleSheet("""
+            QWidget {
+                background-color: #808080;  /* Grey background */
+                border: none;
+            }
+        """)
+        
+        # Create header label
+        from PySide6.QtWidgets import QHBoxLayout, QLabel
+        from PySide6.QtCore import Qt
+        
+        header_layout = QHBoxLayout()
+        header_layout.setContentsMargins(20, 10, 20, 10)  # Add some padding
+        
+        header_label = QLabel("22 KV UMPHANG SUBSTATION")
+        header_label.setStyleSheet("""
+            QLabel {
+                color: #4B0082;  /* Purple text color */
+                font-size: 18px;
+                font-weight: bold;
+                background: transparent;
+            }
+        """)
+        header_label.setAlignment(Qt.AlignCenter)
+        
+        header_layout.addWidget(header_label)
+        self.header_panel.setLayout(header_layout)
+        
+        # Add the header and view to tab1 with vertical layout
         from PySide6.QtWidgets import QVBoxLayout
         tab1_layout = QVBoxLayout()
-        tab1_layout.addWidget(self.view)
+        tab1_layout.addWidget(self.header_panel)  # Add header first (on top)
+        tab1_layout.addWidget(self.view)  # Add graphics view below
         tab1_layout.setContentsMargins(0, 0, 0, 0)
+        tab1_layout.setSpacing(0)  # No spacing between header and view
         self.tab1.setLayout(tab1_layout)
         
         # Draw complete diagram from file
@@ -245,11 +278,53 @@ class MyApp(QMainWindow):
         tab4_layout.addWidget(tab4_content)
         self.tab4.setLayout(tab4_layout)
         
-        # Add tabs to tab widget
-        self.tab_widget.addTab(self.tab1, "Single Line Diagram")
-        self.tab_widget.addTab(self.tab2, "Operation")
-        self.tab_widget.addTab(self.tab3, "Monitoring")
-        self.tab_widget.addTab(self.tab4, "Settings")
+        # Load tab icons
+        from PySide6.QtGui import QPixmap
+        
+        # Create icons from PNG files - adjust paths as needed
+        sld_icon = QIcon("icons/sld_icon.png")          # Single Line Diagram icon
+        operation_icon = QIcon("icons/operation_icon.png")  # Operation icon  
+        monitoring_icon = QIcon("icons/tree_icon.png")  # Monitoring icon
+        settings_icon = QIcon("icons/settings_icon.png")    # Settings icon
+        
+        # Add tabs with icons and text
+        self.tab_widget.addTab(self.tab1, sld_icon, "Single Line Diagram")
+        self.tab_widget.addTab(self.tab2, operation_icon, "Operation") 
+        self.tab_widget.addTab(self.tab3, monitoring_icon, "Object Explorer")
+        self.tab_widget.addTab(self.tab4, settings_icon, "Settings")
+        
+        # Set optimal icon size for tabs (24x24 recommended)
+        self.tab_widget.setIconSize(QSize(20, 20))
+        
+        # Optional: Style the tab widget for better icon display and reduced height
+        self.tab_widget.setStyleSheet("""
+            QTabWidget::pane {
+                border: 1px solid #c0c0c0;
+                top: -1px;
+            }
+            QTabWidget::tab-bar {
+                alignment: left;
+            }
+            QTabBar::tab {
+                background: #f0f0f0;
+                border: 1px solid #c0c0c0;
+                padding: 2px 8px;  /* Reduced padding: top/bottom=4px, left/right=8px */
+                margin-right: 2px;
+                min-height: 16px;  /* Set minimum height */
+                max-height: 20px;  /* Set maximum height */
+                font-size: 11px;   /* Smaller font size */
+            }
+            QTabBar::tab:selected {
+                background: #e0e0e0;
+                border-bottom: 1px solid #e0e0e0;
+            }
+            QTabBar::tab:hover {
+                background: #f5f5f5;
+            }
+            QTabBar {
+                qproperty-drawBase: 0;  /* Remove base line */
+            }
+        """)
 
     def create_menu_bar(self):
         menu_bar = self.menuBar()
@@ -310,11 +385,11 @@ class MyApp(QMainWindow):
         toolbar.setIconSize(QSize(16, 16))
         self.addToolBar(Qt.TopToolBarArea, toolbar)
 
-        new_icon = QAction(QIcon(), "New", self)
+        new_icon = QAction(QIcon("icons/new_icon.png"), "New", self)
         new_icon.triggered.connect(lambda: self.editor.setText(""))
         toolbar.addAction(new_icon)
 
-        exit_icon = QAction(QIcon(), "Exit", self)
+        exit_icon = QAction(QIcon("icons/operation_icon.png"), "Exit", self)
         exit_icon.triggered.connect(self.close)
         toolbar.addAction(exit_icon)
 

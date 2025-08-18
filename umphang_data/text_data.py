@@ -24,7 +24,7 @@ text_maesot_bus = {
     "type": "text",
     "id": "maesot_bus_label",
     "data": {
-        "text": "22 KV MAESOT",
+        "text": "22 KV MAESOT 5",
         "position": [17*GRID_SIZE_X, "maesot_bus:u0:y"],
         "font": {
             "family": "Helvetica",
@@ -355,7 +355,7 @@ result_main_bus = {
             "bold": True,
             "italic": False
         },
-        "color": "lightgreen",
+        "color": "#2BE50B",
         "anchor": "topright",
         "offset": [0, 0],
         "rotation": 0
@@ -374,7 +374,7 @@ result_maesot_bus = {
             "bold": True,
             "italic": False
         },
-        "color": "lightgreen",
+        "color": "#2BE50B",
         "anchor": "bottomleft",
         "offset": [0, 0],
         "rotation": 0
@@ -393,7 +393,7 @@ result_bess_ac_bus = {
             "bold": True,
             "italic": False
         },
-        "color": "lightgreen",
+        "color": "#2BE50B",
         "anchor": "topright",  # Bottom middle of text aligns with the position
         "offset": [0, 0],
         "rotation": 0
@@ -412,9 +412,161 @@ result_diesel_bus = {
             "bold": True,
             "italic": False
         },
-        "color": "lightgreen",
+        "color": "#2BE50B",
         "anchor": "topright",  # Bottom middle of text aligns with the position
         "offset": [0, 10],
         "rotation": 0
+    }
+}
+
+result_maesot_line = {
+    "type": "text",
+    "id": "maesot_line_result",
+    "data": {
+        "text": "5.0 MW\n2.5 MVAr",
+        "position": "maesot_bus:d0",
+        "font": {
+            "family": "Helvetica",
+            "size": 14,
+            "bold": True,
+            "italic": False
+        },
+        "color": "#2BE50B",
+        "anchor": "midright",  # Bottom middle of text aligns with the position
+        "offset": [0, 30],
+        "rotation": -90
+    }
+}
+
+result_umphang_line = {
+    "type": "text",
+    "id": "umphang_line_result",
+    "data": {
+        "text": "-4.1 MW\n2.0 MVAr",
+        "position": "umphang_bus:u0",
+        "font": {
+            "family": "Helvetica",
+            "size": 12,
+            "bold": True,
+            "italic": False
+        },
+        "color": "#2BE50B",
+        "anchor": "midleft",  # Bottom middle of text aligns with the position
+        "offset": [0, -20],
+        "rotation": -90
+    }
+}
+
+result_load1 = {
+    "type": "text",
+    "id": "load1_result",
+    "data": {
+        "text": "1.1 MW\n0.2 MVAr",
+        "position": "umphang_bus:d7",
+        "font": {
+            "family": "Helvetica",
+            "size": 14,
+            "bold": True,
+            "italic": False
+        },
+        "color": "#2BE50B",
+        "anchor": "midright",  # Bottom middle of text aligns with the position
+        "offset": [0, 20],
+        "rotation": -90
+    }
+}
+
+result_load2 = {
+    "type": "text",
+    "id": "load2_result",
+    "data": {
+        "text": "1.0 MW\n0.1 MVAr",
+        "position": "umphang_bus:d8",
+        "font": {
+            "family": "Helvetica",
+            "size": 14,
+            "bold": True,
+            "italic": False
+        },
+        "color": "#2BE50B",
+        "anchor": "midright",  # Bottom middle of text aligns with the position
+        "offset": [0, 20],
+        "rotation": -90
+    }
+}
+
+result_load3 = {
+    "type": "text",
+    "id": "load3_result",
+    "data": {
+        "text": "1.0 MW\n0.3 MVAr",
+        "position": "umphang_bus:d9",
+        "font": {
+            "family": "Helvetica",
+            "size": 14,
+            "bold": True,
+            "italic": False
+        },
+        "color": "#2BE50B",
+        "anchor": "midright",  # Bottom middle of text aligns with the position
+        "offset": [0, 20],
+        "rotation": -90
+    }
+}
+
+result_load4 = {
+    "type": "text",
+    "id": "load4_result",
+    "data": {
+        "text": "0.9 MW\n0.3 MVAr",
+        "position": "umphang_bus:d10",
+        "font": {
+            "family": "Helvetica",
+            "size": 14,
+            "bold": True,
+            "italic": False
+        },
+        "color": "#2BE50B",
+        "anchor": "midright",  # Bottom middle of text aligns with the position
+        "offset": [0, 20],
+        "rotation": -90
+    }
+}
+
+result_diesel = {
+    "type": "text",
+    "id": "diesel_result",
+    "data": {
+        "text": "1.2 MW\n0.3 MVAr",
+        "position": "diesel_bus:u2",
+        "font": {
+            "family": "Helvetica",
+            "size": 16,
+            "bold": True,
+            "italic": False
+        },
+        "color": "#2BE50B",
+        "anchor": "midleft",  # Bottom middle of text aligns with the position
+        "offset": [0, -30],
+        "rotation": -90
+    }
+}
+
+result_bess = {
+    "type": "text",
+    "id": "bess_result",
+    "data": {
+        "text": "0.5 MW\n0.0 MVAr",
+        "position": "umphang_bus:d1",
+        "font": {
+            "family": "Helvetica",
+            "size": 12,
+            "bold": True,
+            "italic": False
+        },
+        "color": "#2BE50B",
+        "anchor": "midright",  # Bottom middle of text aligns with the position
+        "offset": [0, 20],
+        "rotation": -90
     }
 }

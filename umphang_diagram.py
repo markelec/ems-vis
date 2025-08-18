@@ -27,14 +27,7 @@ from umphang_data.gen_data import gen1_json, gen2_json, gen3_json, gen4_json, ge
 
 from umphang_data.avr_data import avr1_json, avr2_json, avr3_json
 
-from umphang_data.text_data import (text_main_bus, text_maesot_bus, 
-    text_bess_ac_bus, text_diesel_bus, 
-    text_load1_bus, text_load2_bus, text_load3_bus, text_load4_bus,
-    text_battery1_bus, text_battery2_bus, text_battery3_bus,
-    text_diesel1_bus, text_diesel2_bus, text_diesel3_bus, text_diesel4_bus, text_diesel5_bus,
-    text_avr1_bus, text_avr2_bus,
-    result_main_bus, result_maesot_bus, result_bess_ac_bus, result_diesel_bus
- )
+from umphang_data.text_data import *
 # Complete diagram dictionary
 diagram_dict = {
     "buses": [
@@ -78,6 +71,8 @@ diagram_dict = {
        text_battery1_bus, text_battery2_bus, text_battery3_bus,
        text_diesel1_bus, text_diesel2_bus, text_diesel3_bus, text_diesel4_bus, text_diesel5_bus,
        text_avr1_bus, text_avr2_bus,
-       result_main_bus, result_maesot_bus, result_bess_ac_bus, result_diesel_bus
+       result_main_bus, result_maesot_bus, result_bess_ac_bus, result_diesel_bus,
+       result_maesot_line, result_umphang_line, result_load1, result_load2, result_load3, result_load4,
+       result_diesel, result_bess
     ]
 }

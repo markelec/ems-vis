@@ -9,9 +9,9 @@ bess_tr_json = {
         "from": "umphang_bus:d1",
         "to": "bess_ac_bus:u2",
         "point": [
-            [ "umphang_bus:d1:x", 425],
+            [ "umphang_bus:d1:x", 450],
             "split",
-            ["bess_ac_bus:u2:x", 525]
+            ["bess_ac_bus:u2:x", 550]
         ],
         "color": "red",
         "linescale": 1.0,
