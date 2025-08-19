@@ -274,7 +274,8 @@ recloser3_line_json = {
                     "scale": 5.0,
                     "offset": [0, 20],
                     "attach": "terminal11_bus:u0",
-                    "direction": "up_right"
+                    "direction": "up_right",
+                    "rotation": 180
                 }
             }
         ]

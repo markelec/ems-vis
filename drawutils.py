@@ -284,6 +284,7 @@ def draw_cubicle(scene, cubicle_obj, ports, base_point, angle, linewidth=1):
     offset = data.get("offset", [0, 0])
     color = data.get("color", "red")
     scale = data.get("scale", 1.0)
+    cubicle_rotation = data.get("rotation", 0)  # New rotation parameter for cubicle
 
     dx, dy = rotated_offset(offset, angle)
     cx = base_point.x() + dx
@@ -297,7 +298,7 @@ def draw_cubicle(scene, cubicle_obj, ports, base_point, angle, linewidth=1):
         item.setBrush(QColor(color))
         item.setPen(QPen(Qt.NoPen))
         item.setPos(cx, cy)
-        item.setRotation(angle)
+        item.setRotation(angle + cubicle_rotation)  # Apply additional rotation
         scene.addItem(item)
         
     elif c_type == "recloser":
@@ -309,7 +310,7 @@ def draw_cubicle(scene, cubicle_obj, ports, base_point, angle, linewidth=1):
         
         # Create text "R" with white color
         text = QGraphicsSimpleTextItem("R")
-        font_size = int(size * 0.7)  # 80% of rectangle height
+        font_size = int(size * 0.7)  # 70% of rectangle height
         font = QFont("Arial", font_size)
         text.setFont(font)
         text.setBrush(QColor("white"))
@@ -318,13 +319,31 @@ def draw_cubicle(scene, cubicle_obj, ports, base_point, angle, linewidth=1):
         text_rect = text.boundingRect()
         text.setPos(-text_rect.width()/2, -text_rect.height()/2)
         
+        # Apply text rotation relative to the rectangle
+        # If cubicle_rotation is specified, apply it to keep text readable
+        if cubicle_rotation != 0:
+            # Calculate text rotation to keep it readable
+            text_angle = cubicle_rotation
+            # Normalize angle to [-180, 180] range
+            while text_angle > 180:
+                text_angle -= 360
+            while text_angle < -180:
+                text_angle += 360
+            
+            # If the text would be upside down, rotate it 180 degrees to keep it readable
+            if abs(text_angle) > 90:
+                text_angle += 180 if text_angle < 0 else -180
+            
+            text.setTransformOriginPoint(text_rect.width()/2, text_rect.height()/2)
+            text.setRotation(text_angle)
+        
         # Group them together
         group = QGraphicsItemGroup()
         group.addToGroup(rect)
         group.addToGroup(text)
         
         group.setPos(cx, cy)
-        group.setRotation(angle)
+        group.setRotation(angle + cubicle_rotation)  # Apply base angle + additional rotation
         scene.addItem(group)
         
     elif c_type == "lbs":
@@ -345,13 +364,31 @@ def draw_cubicle(scene, cubicle_obj, ports, base_point, angle, linewidth=1):
         text_rect = text.boundingRect()
         text.setPos(-text_rect.width()/2, -text_rect.height()/2)
         
+        # Apply text rotation relative to the rectangle
+        # If cubicle_rotation is specified, apply it to keep text readable
+        if cubicle_rotation != 0:
+            # Calculate text rotation to keep it readable
+            text_angle = cubicle_rotation
+            # Normalize angle to [-180, 180] range
+            while text_angle > 180:
+                text_angle -= 360
+            while text_angle < -180:
+                text_angle += 360
+            
+            # If the text would be upside down, rotate it 180 degrees to keep it readable
+            if abs(text_angle) > 90:
+                text_angle += 180 if text_angle < 0 else -180
+            
+            text.setTransformOriginPoint(text_rect.width()/2, text_rect.height()/2)
+            text.setRotation(text_angle)
+        
         # Group them together
         group = QGraphicsItemGroup()
         group.addToGroup(rect)
         group.addToGroup(text)
         
         group.setPos(cx, cy)
-        group.setRotation(angle)
+        group.setRotation(angle + cubicle_rotation)  # Apply base angle + additional rotation
         scene.addItem(group)
         
     elif c_type == "switch":
@@ -390,7 +427,7 @@ def draw_cubicle(scene, cubicle_obj, ports, base_point, angle, linewidth=1):
         group.addToGroup(line)
 
         group.setPos(cx, cy)
-        group.setRotation(angle)
+        group.setRotation(angle + cubicle_rotation)  # Apply base angle + additional rotation
         scene.addItem(group)
     else:
         return
@@ -697,7 +734,6 @@ def draw_inverter_from_json(scene, view, obj, ports):
         draw_connection_point(scene, points[0], connection_point_color, connection_point_size)
 
     # Draw cubicle (only one, at the start)
-    cubicle = data.get("cubicle", [])
     if cubicle and len(points) >= 2:
         angle_start = angle_between(points[0], points[1])
         draw_cubicle(scene, cubicle[0], ports, points[0], angle_start - 90)

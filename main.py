@@ -220,7 +220,7 @@ class MyApp(QMainWindow):
         header_label.setStyleSheet("""
             QLabel {
                 color: #4B0082;  /* Purple text color */
-                font-size: 18px;
+                font-size: 24px;
                 font-weight: bold;
                 background: transparent;
             }
